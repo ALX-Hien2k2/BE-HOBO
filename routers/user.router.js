@@ -1,5 +1,8 @@
 const express = require("express");
-const { getUserDetails } = require("../repositories/UserRepositories");
+const {
+  getUserDetails,
+  createUser,
+} = require("../repositories/UserRepositories");
 const userRouter = express.Router();
 
 //  Test get request
@@ -21,6 +24,18 @@ userRouter.get("/:uid", (req, res) => {
     })
     .catch((err) => {
       res.status(400).send(err);
+    });
+});
+
+userRouter.post("/createUser", (req, res) => {
+  const user = req.body;
+  createUser(user)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      console.log("err", err);
+      res.status(400).send(err.message);
     });
 });
 

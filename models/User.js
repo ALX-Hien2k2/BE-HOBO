@@ -1,6 +1,5 @@
-import Model from "./Model";
-
-export default class User extends Model {
+const Model = require("./Model");
+class User extends Model {
   constructor() {
     super();
     this.username = null;
@@ -16,4 +15,12 @@ export default class User extends Model {
     this.hotelName = null;
     this.hotelAddress = null;
   }
+  getTypeUser() {
+    return {
+      Admin: 0,
+      Customer: 1,
+      Hotel: 2,
+    };
+  }
 }
+module.exports = User;
