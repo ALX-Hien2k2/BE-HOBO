@@ -1,4 +1,6 @@
-export default class Comments extends Model {
+const Model = require("./Model");
+
+class Comments extends Model {
   constructor() {
     super();
     this.comment = null;
@@ -7,3 +9,5 @@ export default class Comments extends Model {
     this.isHide = null;
   }
 }
+
+module.exports = Comments;

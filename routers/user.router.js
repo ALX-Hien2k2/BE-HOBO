@@ -45,7 +45,7 @@ userRouter.get("/list", (req, res) => {
 });
 
 // Login
-userRouter.post("/login", (req, res) => {
+userRouter.post("/signin", (req, res) => {
   console.log("req.body", req.body);
   const userAccount = req.body;
 
@@ -93,8 +93,9 @@ userRouter.post("/createUser", (req, res) => {
 });
 
 // Change user info
-userRouter.post("/changeInfo", (req, res) => {
+userRouter.post("/changeinfo", (req, res) => {
   const user = req.body;
+  console.log("info", user);
   changeInfo(user)
     .then((data) => {
       res.send(data);

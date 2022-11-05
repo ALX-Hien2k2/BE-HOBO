@@ -149,7 +149,6 @@ const signupAcc = async (signupAccount) => {
 
 const createUser = async (user) => {
   console.log("user", user);
-
   const require = (attr) => {
     console.log("attr", attr);
     Object.keys(attr).forEach((key) => {
@@ -165,12 +164,12 @@ const createUser = async (user) => {
       const newUser = new User();
       require({
         username: user.username,
-        pwd: user.pwd,
+        password: user.password,
         userType: user.userType,
       });
       newUser.username = user.username;
       newUser.email = user.email;
-      newUser.password = user.pwd;
+      newUser.password = user.password;
       newUser.firstName = user.firstName || null;
       newUser.lastName = user.lastName || null;
       newUser.userType = user.userType;
@@ -201,7 +200,51 @@ const createUser = async (user) => {
 };
 
 const changeInfo = async (userInfo) => {
+  const promise = new Promise((resolve, reject) => {
+    // Có thể quy định các thuộc tính nào được phép đổi
 
+    // const require = (attr) => {
+    //   console.log("attr", attr);
+    //   Object.keys(attr).forEach((key) => {
+    //     console.log("key", key, "attr[key]", attr[key]);
+    //     if (user[key] === undefined) {
+    //       throw new Error(`${key} is required`);
+    //     }
+    //   });
+    // };
+
+    try {
+      const A_info = {
+        username: "trchihien",
+        email: "chihien2002@gmail.com",
+        password: "123",
+        firstName: "Hien",
+        lastName: "Truong",
+        userType: 1,
+        dob: "15/04/2002",
+        licenseNumber: null,
+        phoneNumber: "0795907075",
+        history: null,
+        hotelName: null,
+        hotelAddress: null
+      };
+      const user = new User();
+      user.setInfo(A_info);
+      console.log(user);
+
+      console.log("userInfo", userInfo);
+      Object.keys(userInfo).forEach((key) => {
+        // console.log("key", key, "this.key", user[key], "obj[key]", userInfo[key]);
+        user[key] = userInfo[key]
+      });
+
+      console.log(user);
+      resolve(user);
+    } catch (error) {
+      reject(err);
+    }
+  });
+  return promise;
 };
 
 module.exports = {
