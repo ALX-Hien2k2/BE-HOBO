@@ -18,8 +18,6 @@ const getUserDetails = async (userId) => {
 };
 
 const createUser = async (user) => {
-  console.log("user", user);
-
   const promise = new Promise((resolve, reject) => {
     try {
       const newUser = new User();
@@ -39,7 +37,6 @@ const createUser = async (user) => {
       newUser.userType = user.userType;
       newUser.dob = user.dob || null;
       if (user.userType === newUser.getTypeUser().Hotel) {
-        console.log("user.userType", user.userType);
         validateCheck(
           {
             licenseNumber: user.licenseNumber,
@@ -66,8 +63,6 @@ const createUser = async (user) => {
   });
   return promise;
 };
-// validate
-// tương tác vs db
 module.exports = {
   getUserDetails,
   createUser,

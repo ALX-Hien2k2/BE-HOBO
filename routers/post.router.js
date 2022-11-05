@@ -1,17 +1,17 @@
 const express = require("express");
-const { createPost } = require("../repositories/PostRepositories");
 const {
-  getUserDetails,
-  createUser,
-} = require("../repositories/UserRepositories");
+  createPost,
+  getPostDetails,
+  approvePost,
+} = require("../repositories/PostRepositories");
+
 const postRouter = express.Router();
 
-postRouter.get("/:uid", (req, res) => {
-  const userId = req.params.uid;
-  console.log("userId", userId);
-  getUserDetails(userId)
-    .then((user) => {
-      res.send(user);
+postRouter.get("/:id", (req, res) => {
+  const { id } = req.params;
+  getPostDetails(id)
+    .then((post) => {
+      res.send(post);
     })
     .catch((err) => {
       res.status(400).send(err);
@@ -30,4 +30,11 @@ postRouter.post("/createPost", (req, res) => {
     });
 });
 
+postRouter.post("/approve/:id", (req, res) => {
+  const { id } = req.params;
+  const { userId } = req.body;
+  approvePost(id, userId)
+    .then((data) => {})
+    .catch((err) => {});
+});
 module.exports = postRouter;
