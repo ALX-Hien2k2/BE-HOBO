@@ -5,13 +5,13 @@ const maxSize = 10 * 1024 * 1024;//max 10MB
 let storage = multer.diskStorage({
   destination: (req, file, cb) => {
     XlsxPopulate.fromFileAsync()
-    .then(workbook => {
+      .then(workbook => {
         // Modify the workbook.
         const value = workbook.sheet("Sheet1").cell("A1").value();
 
         // Log the value.
         console.log(value);
-    });
+      });
     cb(null, "./resources/static/assets/uploads/");
   },
   filename: (req, file, cb) => {
