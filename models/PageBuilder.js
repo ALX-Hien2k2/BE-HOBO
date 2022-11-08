@@ -1,4 +1,6 @@
-export default class PageBuilder extends Model {
+const Model = require("./Model");
+
+class PageBuilder extends Model {
   constructor() {
     super();
     this.idPage = null;
@@ -9,3 +11,4 @@ export default class PageBuilder extends Model {
     this.postList = null;
   }
 }
+module.exports = PageBuilder;

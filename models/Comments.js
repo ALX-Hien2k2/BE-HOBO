@@ -1,3 +1,5 @@
+const Model = require("./Model");
+
 class Comments extends Model {
   constructor() {
     super();
@@ -7,4 +9,5 @@ class Comments extends Model {
     this.isHide = null;
   }
 }
+
 module.exports = Comments;
