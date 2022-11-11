@@ -1,10 +1,9 @@
 const express = require("express");
 const {
   getUserDetails,
-  createUser,
-  loginAcc,
+  signInAcc,
   getUserList,
-  signupAcc,
+  signUpAcc,
   changeInfo
 } = require("../repositories/UserRepositories");
 const userRouter = express.Router();
@@ -21,10 +20,10 @@ userRouter.post("/", (req, res) => {
 
 // Get user info
 userRouter.get("/info/:uid", (req, res) => {
-  const userId = req.params.uid;
-  console.log("userId", userId);
+  const userID = req.params.uid;
+  console.log("userID", userID);
 
-  getUserDetails(userId)
+  getUserDetails(userID)
     .then((user) => {
       res.send(user);
     })
@@ -46,49 +45,35 @@ userRouter.get("/list", (req, res) => {
 
 // Login
 userRouter.post("/signin", (req, res) => {
-  console.log("req.body", req.body);
+  console.log("sign in account", req.body);
   const userAccount = req.body;
 
-  loginAcc(userAccount)
+  signInAcc(userAccount)
     .then((data) => {
       res.send(data);
     })
     .catch((err) => {
       if (typeof err == "object") {
-        console.log("err", err);
         res.status(400).send(err.message);
       }
-      else {
-        console.log("err", err);
-        res.status(400).send(err);
-      }
-
+      res.status(400).send(err);
     });
 });
 
 // Sign up
 userRouter.post("/signup", (req, res) => {
-  console.log("req.body", req.body);
-  const signupAccount = req.body;
-
-  signupAcc(signupAccount)
-    .then((status) => {
-      res.send(status);
-    })
-    .catch((err) => {
-      res.status(400).send(err);
-    });
-});
-
-userRouter.post("/createUser", (req, res) => {
   const user = req.body;
-  createUser(user)
+  signUpAcc(user)
     .then((data) => {
       res.send(data);
     })
     .catch((err) => {
-      console.log("err", err);
-      res.status(400).send(err.message);
+      if (typeof err == "object") {
+        res.status(400).send(err.message);
+      }
+      else {
+        res.status(400).send(err);
+      }
     });
 });
 
@@ -102,7 +87,12 @@ userRouter.post("/changeinfo", (req, res) => {
     })
     .catch((err) => {
       console.log("err", err);
-      res.status(400).send(err.message);
+      if (typeof err == "string") {
+        res.status(400).send(err);
+      }
+      else {
+        res.status(400).send(err.message);
+      }
     });
 });
 
