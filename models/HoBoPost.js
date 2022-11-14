@@ -10,6 +10,7 @@ class HoBoPost extends Model {
     this.date = null;
     this.time = null;
     this.userId = null;
+    this.hotelName = null;
     this.isApproved = null;
   }
 }

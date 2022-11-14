@@ -1,13 +1,14 @@
 const express = require("express");
 const {
   createPost,
+  getRoomList,
   getPostDetails,
   approvePost,
 } = require("../repositories/PostRepositories");
 
 const postRouter = express.Router();
 
-postRouter.get("/:id", (req, res) => {
+postRouter.get("info/:id", (req, res) => {
   const { id } = req.params;
   getPostDetails(id)
     .then((post) => {
@@ -34,7 +35,20 @@ postRouter.post("/approve/:id", (req, res) => {
   const { id } = req.params;
   const { userId } = req.body;
   approvePost(id, userId)
-    .then((data) => {})
-    .catch((err) => {});
+    .then((data) => { })
+    .catch((err) => { });
 });
+
+postRouter.get("/roomList", (req, res) => {
+  const filter = req.body;
+  console.log(filter);
+  getRoomList(filter)
+    .then((roomList) => {
+      res.send(roomList);
+    })
+    .catch((err) => {
+      res.status(400).send(err);
+    });
+});
+
 module.exports = postRouter;

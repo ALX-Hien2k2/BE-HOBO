@@ -9,11 +9,37 @@ class User extends Model {
     this.lastName = null;
     this.userType = null;
     this.dob = null;
-    this.licenseNumber = null;
-    this.phoneNumber = null;
     this.history = null;
+    this.phoneNumber = null;
+
+    this.licenseNumber = null;
     this.hotelName = null;
+    this.hotelPhoneNumber = null;
     this.hotelAddress = null;
+  }
+
+  setID(obj) {
+    this._id = obj._id;
+  }
+
+  setGeneralInfo(obj) {
+    this.username = obj.username;
+
+    this.userType = obj.userType;
+    this.email = obj.email || null;
+    this.firstName = obj.firstName || null;
+    this.lastName = obj.lastName || null;
+    this.dob = obj.dob || null;
+    this.history = obj.history || null;
+    this.phoneNumber = obj.phoneNumber || null;
+  }
+
+  setHotelOwnerInfo(obj) {
+    this.licenseNumber = obj.licenseNumber || null;
+    this.phoneNumber = obj.phoneNumber || null;
+    this.hotelName = obj.hotelName || null;
+    this.hotelAddress = obj.hotelAddress || null;
+    this.hotelPhoneNumber = obj.hotelPhoneNumber || null;
   }
 
   getTypeUser() {
@@ -23,29 +49,6 @@ class User extends Model {
       Hotel: 2,
     };
   }
-
-  setInfo(obj) {
-    this.username = obj.username;
-    this.email = obj.email;
-    this.password = obj.password;
-    this.firstName = obj.firstName;
-    this.lastName = obj.lastName;
-    this.userType = obj.userType;
-    this.dob = obj.dob;
-    this.licenseNumber = obj.licenseNumber;
-    this.phoneNumber = obj.phoneNumber;
-    this.history = obj.history;
-    this.hotelName = obj.hotelName;
-    this.hotelAddress = obj.hotelAddress;
-  }
-
-  // changeInfo(obj) {
-  //   console.log("obj", obj);
-  //   Object.keys(obj).forEach((key) => {
-  //     console.log("key", key, "this.key", this[key], "obj[key]", obj[key]);
-  //     this[key] = obj[key]
-  //   });
-  // }
-
 }
+
 module.exports = User;
