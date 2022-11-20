@@ -2,6 +2,8 @@ const { validateCheck } = require("../helps/ValidationBody");
 const uuid = require("uuid");
 const User = require("../models/User");
 const bcrypt = require('bcryptjs');
+const { findOne, collection } = require("../services/DatabaseServices");
+const Collections = require("../services/Collections");
 
 
 const getUserDetails = async (userID) => {
@@ -97,6 +99,8 @@ const getUserList = async () => {
 const signInAcc = async (userAccount) => {
   const promise = new Promise((resolve, reject) => {
     try {
+      const result = findOne(new Collections().user, { username: userAccount.username });
+      console.log("result", result);
       // Search for user's info in db using username
       // If not found (db return NULL), raise alert and return
       // reject("Wrong userName or password");

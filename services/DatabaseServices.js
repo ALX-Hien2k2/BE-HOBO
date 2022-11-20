@@ -1,6 +1,6 @@
 const mongoDb = require("mongodb");
 const collection = {};
-const connectToMongoDb = async () => {
+const connectToMongoDb = async (collectionNames) => {
   const promise = new Promise(async (resolve, reject) => {
     try {
       const mongoDbUrl = process.env.MONGODB_URL;
@@ -8,10 +8,10 @@ const connectToMongoDb = async () => {
       const client = new mongoDb.MongoClient(mongoDbUrl);
       await client.connect();
       const db = client.db(process.env.MONGODB_DB_NAME);
-      collection.user = db.collection("user");
-      console.log(
-        `Successfully connected to database: ${db.databaseName} and collection: ${collection.user.collectionName}`
-      );
+      console.log("Connected to MongoDB");
+      for (let i = 0; i < collectionNames.length; i++) {
+        collection[collectionNames[i]] = db.collection(collectionNames[i]);
+      }
       resolve(client);
     } catch (error) {
       reject(error);
@@ -19,4 +19,51 @@ const connectToMongoDb = async () => {
   });
   return promise;
 };
-module.exports = { connectToMongoDb, collection };
+const createCollectionDataBase = async (collectionNames) => {
+  console.log("Creating collection...", collectionNames);
+  try {
+    const mongoDbUrl = process.env.MONGODB_URL;
+    const client = new mongoDb.MongoClient(mongoDbUrl);
+    const db = client.db(process.env.DB_NAME);
+    if (collectionNames.length <= 0) {
+      throw new Exception(500, "Collection Names empty");
+    }
+    for (let i = 0; i < collectionNames.length; i++) {
+      await db
+        .createCollection(collectionNames[i])
+        .then((res) => {
+          console.log(`create new collection ${collectionNames[i]} successed`);
+        })
+        .catch((e) => {
+          console.log(
+            `create new collection ${collectionNames[i]} failed`,
+            e.message
+          );
+        });
+    }
+    client.close();
+    return true;
+  } catch (error) {
+    console.log("Create Collections Error", error);
+    return false;
+  }
+};
+
+const findOne = async (collectionName, filter) => {
+  const promise = new Promise(async (resolve, reject) => {
+    try {
+      let result = collection[collectionName].findOne(filter);
+      resolve(result);
+    } catch (error) {
+      reject(error);
+    }
+  });
+  return promise;
+};
+
+module.exports = {
+  connectToMongoDb,
+  collection,
+  createCollectionDataBase,
+  findOne,
+};
