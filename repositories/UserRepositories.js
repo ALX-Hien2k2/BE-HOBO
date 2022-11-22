@@ -4,12 +4,12 @@ const User = require("../models/User");
 const bcrypt = require('bcryptjs');
 const { findOne, findAll, insertOne, updateOne } = require("../services/DatabaseServices");
 const Collections = require("../services/Collections");
+const ObjectId = require('mongodb').ObjectId;
 
-
-const getUserDetails = async (user_name) => {
+const getUserDetails = async (user_id) => {
   const promise = new Promise(async (resolve, reject) => {
     try {
-      const userInfo = await findOne(new Collections().user, { username: user_name });
+      const userInfo = await findOne(new Collections().user, { _id: ObjectId(user_id) });
       if (userInfo) {
         console.log(userInfo);
         resolve(userInfo);
@@ -27,7 +27,7 @@ const getUserDetails = async (user_name) => {
 const getUserList = async () => {
   const promise = new Promise(async (resolve, reject) => {
     try {
-      const userList = await findAll(new Collections().user);
+      const userList = await findAll(new Collections().user, {});
       if (userList) {
         console.log("userList ", userList);
         resolve(userList);

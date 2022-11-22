@@ -8,9 +8,9 @@ const {
 
 const postRouter = express.Router();
 
-postRouter.get("info/:id", (req, res) => {
-  const { id } = req.params;
-  getPostDetails(id)
+postRouter.get("/info/:id", (req, res) => {
+  const post_id = req.params.id;
+  getPostDetails(post_id)
     .then((post) => {
       res.send(post);
     })
@@ -26,8 +26,10 @@ postRouter.post("/createPost", (req, res) => {
       res.send(data);
     })
     .catch((err) => {
-      console.log("err", err);
-      res.status(400).send(err.message);
+      if (typeof err == "object") {
+        res.status(400).send(err.message);
+      }
+      res.status(400).send(err);
     });
 });
 

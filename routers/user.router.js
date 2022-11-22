@@ -19,9 +19,9 @@ userRouter.post("/", (req, res) => {
 });
 
 // Get user info
-userRouter.get("/info/:username", (req, res) => {
-  const user_name = req.params.username;
-  getUserDetails(user_name)
+userRouter.get("/info/:uid", (req, res) => {
+  const user_id = req.params.uid;
+  getUserDetails(user_id)
     .then((userInfo) => {
       res.send(userInfo);
     })

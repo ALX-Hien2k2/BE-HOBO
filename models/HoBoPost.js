@@ -13,5 +13,17 @@ class HoBoPost extends Model {
     this.hotelName = null;
     this.isApproved = null;
   }
+
+  setInfo(obj) {
+    this.title = obj.title;
+    this.description = obj.description;
+    this.image = obj.image;
+    this.location = obj.location;
+    this.date = obj.date;
+    this.time = obj.time;
+    this.userId = obj.userId;
+    this.hotelName = obj.hotelName;
+    this.isApproved = obj.isApproved || null;
+  }
 }
 module.exports = HoBoPost;

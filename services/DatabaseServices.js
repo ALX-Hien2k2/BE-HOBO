@@ -64,10 +64,11 @@ const findOne = async (collectionName, filter) => {
   return promise;
 };
 
-const findAll = async (collectionName) => {
+const findAll = async (collectionName, filter) => {
   const promise = new Promise(async (resolve, reject) => {
     try {
-      let result = await collection[collectionName].find().toArray();
+      let result = await collection[collectionName].find(filter).toArray();
+      console.log("result ", result);
       resolve(result);
     } catch (error) {
       console.log(err);
@@ -76,6 +77,25 @@ const findAll = async (collectionName) => {
   });
   return promise;
 };
+
+// const searchAll = async (collectionName, filter) => {
+//   const promise = new Promise(async (resolve, reject) => {
+//     try {
+//       await collection[collectionName].createIndex(
+//         {
+//           name: "text",
+//           description: "text",
+//         })
+//       let result = await collection[collectionName].find(filter).toArray();
+//       console.log("result ", result);
+//       resolve(result);
+//     } catch (error) {
+//       console.log(err);
+//       reject(err);
+//     }
+//   });
+//   return promise;
+// };
 
 const insertOne = async (collectionName, obj) => {
   const promise = new Promise(async (resolve, reject) => {
