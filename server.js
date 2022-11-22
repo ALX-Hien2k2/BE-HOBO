@@ -35,4 +35,4 @@ createCollectionDataBase(new Collections().getListCollections())
       process.exit(1);
     }
   })
-  .catch((err) => {});
+  .catch((err) => { });

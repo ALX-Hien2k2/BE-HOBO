@@ -1,5 +1,6 @@
 const mongoDb = require("mongodb");
 const collection = {};
+
 const connectToMongoDb = async (collectionNames) => {
   const promise = new Promise(async (resolve, reject) => {
     try {
@@ -19,12 +20,13 @@ const connectToMongoDb = async (collectionNames) => {
   });
   return promise;
 };
+
 const createCollectionDataBase = async (collectionNames) => {
-  console.log("Creating collection...", collectionNames);
+  console.log("Creating collections...", collectionNames);
   try {
     const mongoDbUrl = process.env.MONGODB_URL;
     const client = new mongoDb.MongoClient(mongoDbUrl);
-    const db = client.db(process.env.DB_NAME);
+    const db = client.db(process.env.MONGODB_DB_NAME);
     if (collectionNames.length <= 0) {
       throw new Exception(500, "Collection Names empty");
     }
@@ -52,10 +54,37 @@ const createCollectionDataBase = async (collectionNames) => {
 const findOne = async (collectionName, filter) => {
   const promise = new Promise(async (resolve, reject) => {
     try {
-      let result = collection[collectionName].findOne(filter);
+      let result = await collection[collectionName].findOne(filter);
       resolve(result);
     } catch (error) {
-      reject(error);
+      console.log(err);
+      reject(err);
+    }
+  });
+  return promise;
+};
+
+const findAll = async (collectionName) => {
+  const promise = new Promise(async (resolve, reject) => {
+    try {
+      let result = await collection[collectionName].find().toArray();
+      resolve(result);
+    } catch (error) {
+      console.log(err);
+      reject(err);
+    }
+  });
+  return promise;
+};
+
+const insertOne = async (collectionName, obj) => {
+  const promise = new Promise(async (resolve, reject) => {
+    try {
+      let result = await collection[collectionName].insertOne(obj);
+      resolve(result);
+    } catch (error) {
+      console.log(err);
+      reject(err);
     }
   });
   return promise;
@@ -66,4 +95,6 @@ module.exports = {
   collection,
   createCollectionDataBase,
   findOne,
+  findAll,
+  insertOne,
 };

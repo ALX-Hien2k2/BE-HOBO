@@ -19,13 +19,11 @@ userRouter.post("/", (req, res) => {
 });
 
 // Get user info
-userRouter.get("/info/:uid", (req, res) => {
-  const userID = req.params.uid;
-  console.log("userID", userID);
-
-  getUserDetails(userID)
-    .then((user) => {
-      res.send(user);
+userRouter.get("/info/:phoneNumber", (req, res) => {
+  const phone_number = req.params.phoneNumber;
+  getUserDetails(phone_number)
+    .then((userInfo) => {
+      res.send(userInfo);
     })
     .catch((err) => {
       res.status(400).send(err);
@@ -43,11 +41,10 @@ userRouter.get("/list", (req, res) => {
     });
 });
 
-// Login
+// Log in
 userRouter.post("/signin", (req, res) => {
   console.log("sign in account", req.body);
   const userAccount = req.body;
-
   signInAcc(userAccount)
     .then((data) => {
       res.send(data);
