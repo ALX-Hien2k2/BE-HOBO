@@ -2,6 +2,7 @@ const Model = require("./Model");
 class User extends Model {
   constructor() {
     super();
+    this.username = null;
     this.phoneNumber = null;
     this.email = null;
     this.password = null;
@@ -18,7 +19,8 @@ class User extends Model {
   }
 
   setGeneralInfo(obj) {
-    this.phoneNumber = obj.phoneNumber
+    this.username = obj.username;
+    this.phoneNumber = obj.phoneNumber;
     this.userType = obj.userType;
     this.email = obj.email || null;
     this.firstName = obj.firstName || null;

@@ -2,14 +2,14 @@ const { validateCheck, validateExistence } = require("../helps/ValidationBody");
 const uuid = require("uuid");
 const User = require("../models/User");
 const bcrypt = require('bcryptjs');
-const { findOne, findAll, insertOne } = require("../services/DatabaseServices");
+const { findOne, findAll, insertOne, updateOne } = require("../services/DatabaseServices");
 const Collections = require("../services/Collections");
 
 
-const getUserDetails = async (phone_number) => {
+const getUserDetails = async (user_name) => {
   const promise = new Promise(async (resolve, reject) => {
     try {
-      const userInfo = await findOne(new Collections().user, { phoneNumber: phone_number });
+      const userInfo = await findOne(new Collections().user, { username: user_name });
       if (userInfo) {
         console.log(userInfo);
         resolve(userInfo);
@@ -45,20 +45,21 @@ const getUserList = async () => {
 const signInAcc = async (userAccount) => {
   const promise = new Promise(async (resolve, reject) => {
     try {
-      const result = await findOne(new Collections().user, { phoneNumber: userAccount.phoneNumber });
+      const result = await findOne(new Collections().user, { username: userAccount.username });
       if (result) {
         console.log(result);
-        console.log("phoneNumber found");
+        console.log("username found");
         if (!bcrypt.compareSync(userAccount.password, result.password)) {
           console.log("Wrong password");
-          reject("Wrong phoneNumber or password");
+          reject("Wrong username or password");
         }
-        resolve("Login successfully");
+        console.log("Sign in successfully");
+        resolve(result);
       }
       else {
-        console.log("phoneNumber not found");
+        console.log("username not found");
       }
-      reject("Wrong phoneNumber or password");
+      reject("Wrong username or password");
     } catch (err) {
       reject(err);
     }
@@ -73,17 +74,17 @@ const signUpAcc = async (newAccount) => {
       // Validate
       validateCheck(
         {
-          phoneNumber: newAccount.phoneNumber,
+          username: newAccount.username,
           password: newAccount.password,
+          phoneNumber: newAccount.phoneNumber,
           userType: newAccount.userType,
         },
         newAccount);
 
-      console.log(newAccount.phoneNumber);
-      // Check if phoneNumber already exists
-      if (await validateExistence(newAccount.phoneNumber)) {
-        console.log("phoneNumber already exists");
-        reject("phoneNumber already exists");
+      // Check if username already exists
+      if (await validateExistence(newAccount.username)) {
+        console.log("username already exists");
+        reject("username already exists");
       }
       else {
         // Add info to User class
@@ -111,10 +112,23 @@ const signUpAcc = async (newAccount) => {
         newUser.setHotelOwnerInfo(newAccount);
 
         try {
-          const result = await insertOne(new Collections().user, newUser);
-          if (result["acknowledged"] === true) {
+          const insertResult = await insertOne(new Collections().user, newUser);
+          if (insertResult["acknowledged"] === true) {
             console.log("Insert successfully");
-            resolve("Sign up successfully");
+            try {
+              const findResult = await findOne(new Collections().user, { username: newAccount.username });
+              if (findResult) {
+                console.log("Find successfully");
+                resolve(findResult);
+              }
+              else {
+                console.log("Find failed");
+                reject("Cannot find user");
+              }
+            } catch (err) {
+              console.log(err);
+              reject(err);
+            }
           }
           else {
             console.log("Insert failed");
@@ -133,37 +147,38 @@ const signUpAcc = async (newAccount) => {
 };
 
 const changeInfo = async (userChangeInfo) => {
-  const promise = new Promise((resolve, reject) => {
+  const promise = new Promise(async (resolve, reject) => {
     try {
-      // Option 1: Update all info
-      // Client will let user change their info, no matter which info they change,
-      // client always send all info to server
+      // hash password
+      const salt = bcrypt.genSaltSync(10);
+      const hash = bcrypt.hashSync(userChangeInfo.password, salt);
 
-      // Client will sent uid and user's info
+      // Set user's info
+      userChangeInfo.password = hash;
 
-      // Search for user's info in db using uid
+      // Update information
+      const updateResult = await updateOne(new Collections().user, { username: userChangeInfo.username }, userChangeInfo);
+      if (updateResult["matchedCount"] === 0) {
+        console.log("user not found!");
+        reject("user not found!");
 
-      // If not found, raise alert and return
-
-      // If found, update user's info to db and return it
-      // MongoDB: update userChangeInfo to db
-
-      // Update user's info
-      Object.keys(userChangeInfo).forEach((key) => {
-        if (key == "password") {
-          const salt = bcrypt.genSaltSync(10);
-          updated_Info[key] = bcrypt.hashSync(userChangeInfo[key], salt);
-        } else {
-          updated_Info[key] = userChangeInfo[key]
+      } else {
+        console.log("update sucessfully");
+        try {
+          const findResult = await findOne(new Collections().user, { username: userChangeInfo.username });
+          if (findResult) {
+            console.log("Find successfully");
+            resolve(findResult);
+          } else {
+            console.log("Find failed");
+            reject("Cannot find user");
+          }
+        } catch (err) {
+          console.log(err);
+          reject(err);
         }
-      });
-
-      // Save to db
-
-      // return user's info
-      console.log(updated_Info);
-      resolve(updated_Info);
-    } catch (error) {
+      }
+    } catch (err) {
       reject(err);
     }
   });
@@ -175,5 +190,5 @@ module.exports = {
   signInAcc,
   getUserList,
   signUpAcc,
-  changeInfo
+  changeInfo,
 };

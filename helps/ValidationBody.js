@@ -9,9 +9,9 @@ const validateCheck = (attr, body) => {
   });
 };
 
-const validateExistence = async (phone_number) => {
+const validateExistence = async (user_name) => {
   try {
-    const result = await findOne(new Collections().user, { phoneNumber: phone_number });
+    const result = await findOne(new Collections().user, { username: user_name });
     console.log("result ", result);
     if (result) {
       return true;

@@ -19,9 +19,9 @@ userRouter.post("/", (req, res) => {
 });
 
 // Get user info
-userRouter.get("/info/:phoneNumber", (req, res) => {
-  const phone_number = req.params.phoneNumber;
-  getUserDetails(phone_number)
+userRouter.get("/info/:username", (req, res) => {
+  const user_name = req.params.username;
+  getUserDetails(user_name)
     .then((userInfo) => {
       res.send(userInfo);
     })
@@ -77,13 +77,11 @@ userRouter.post("/signup", (req, res) => {
 // Change user info
 userRouter.post("/changeinfo", (req, res) => {
   const user = req.body;
-  console.log("info", user);
   changeInfo(user)
     .then((data) => {
       res.send(data);
     })
     .catch((err) => {
-      console.log("err", err);
       if (typeof err == "string") {
         res.status(400).send(err);
       }

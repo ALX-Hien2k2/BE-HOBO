@@ -90,6 +90,19 @@ const insertOne = async (collectionName, obj) => {
   return promise;
 };
 
+const updateOne = async (collectionName, filter, obj) => {
+  const promise = new Promise(async (resolve, reject) => {
+    try {
+      let result = await collection[collectionName].updateOne(filter, { $set: obj });
+      resolve(result);
+    } catch (error) {
+      console.log(err);
+      reject(err);
+    }
+  });
+  return promise;
+};
+
 module.exports = {
   connectToMongoDb,
   collection,
@@ -97,4 +110,5 @@ module.exports = {
   findOne,
   findAll,
   insertOne,
+  updateOne,
 };
