@@ -30,14 +30,13 @@ const createPost = async (post) => {
     try {
       validateCheck(
         {
-          title: post.title,
-          description: post.description,
-          image: post.image,
+          roomName: post.roomName,
+          price: post.price,
           location: post.location,
-          date: post.date,
-          time: post.time,
           userId: post.userId,
-          hotelName: post.hotelName
+          hotelName: post.hotelName,
+          isApproved: post.isApproved,
+          numberStar: post.numberStar,
         },
         post
       );
@@ -113,7 +112,15 @@ const approvePost = async (postId, userId) => {
 const getRoomList = async (filter) => {
   const promise = new Promise(async (resolve, reject) => {
     try {
-      const roomList = await findAll(new Collections().post, filter);
+      const roomList = await findAll(new Collections().post, filter, {
+        roomImg: 1,
+        roomName: 1,
+        price: 1,
+        location: 1,
+        hotelName: 1,
+        numberStar: 1
+      });
+
       if (roomList) {
         console.log("roomList ", roomList);
         resolve(roomList);

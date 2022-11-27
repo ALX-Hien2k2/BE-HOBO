@@ -3,27 +3,29 @@ const Model = require("./Model");
 class HoBoPost extends Model {
   constructor() {
     super();
-    this.title = null;
+    this.roomName = null;
     this.description = null;
-    this.image = null;
     this.location = null;
-    this.date = null;
-    this.time = null;
     this.userId = null;
     this.hotelName = null;
     this.isApproved = null;
+    this.price = null;
+    this.roomImg = null;
+    this.hotelImg = null;
+    this.numberStar = null;
   }
 
   setInfo(obj) {
-    this.title = obj.title;
-    this.description = obj.description;
-    this.image = obj.image;
+    this.roomName = obj.roomName;
+    this.price = obj.price;
+    this.roomImg = obj.roomImg;
     this.location = obj.location;
-    this.date = obj.date;
-    this.time = obj.time;
     this.userId = obj.userId;
     this.hotelName = obj.hotelName;
-    this.isApproved = obj.isApproved || null;
+    this.hotelImg = obj.hotelImg;
+    this.description = obj.description;
+    this.isApproved = obj.isApproved;
+    this.numberStar = obj.numberStar;
   }
 }
 module.exports = HoBoPost;
