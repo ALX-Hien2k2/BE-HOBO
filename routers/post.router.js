@@ -1,7 +1,7 @@
 const express = require("express");
 const {
   createPost,
-  getRoomList,
+  getPostList,
   getPostDetails,
   approvePost,
 } = require("../repositories/PostRepositories");
@@ -19,9 +19,21 @@ postRouter.get("/info/:id", (req, res) => {
     });
 });
 
+postRouter.get("/postlist", (req, res) => {
+  const filter = req.body;
+  console.log(filter);
+  getPostList(filter)
+    .then((postList) => {
+      res.send(postList);
+    })
+    .catch((err) => {
+      res.status(400).send(err);
+    });
+});
+
 postRouter.post("/createPost", (req, res) => {
-  const user = req.body;
-  createPost(user)
+  const post = req.body;
+  createPost(post)
     .then((data) => {
       res.send(data);
     })
@@ -33,24 +45,26 @@ postRouter.post("/createPost", (req, res) => {
     });
 });
 
+// postRouter.post("/changeinfo", (req, res) => {
+//   const postInfo = req.body;
+//   changePostInfo(postInfo)
+//     .then((data) => {
+//       res.send(data);
+//     })
+//     .catch((err) => {
+//       if (typeof err == "object") {
+//         res.status(400).send(err.message);
+//       }
+//       res.status(400).send(err);
+//     });
+// });
+
 postRouter.post("/approve/:id", (req, res) => {
   const { id } = req.params;
   const { userId } = req.body;
   approvePost(id, userId)
     .then((data) => { })
     .catch((err) => { });
-});
-
-postRouter.get("/roomList", (req, res) => {
-  const filter = req.body;
-  console.log(filter);
-  getRoomList(filter)
-    .then((roomList) => {
-      res.send(roomList);
-    })
-    .catch((err) => {
-      res.status(400).send(err);
-    });
 });
 
 module.exports = postRouter;

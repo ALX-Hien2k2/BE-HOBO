@@ -1,10 +1,11 @@
 const express = require("express");
 const {
   getUserDetails,
-  signInAcc,
+  signIn,
   getUserList,
-  signUpAcc,
-  changeInfo
+  signUp,
+  changeUserInfo,
+  changePassword,
 } = require("../repositories/UserRepositories");
 const userRouter = express.Router();
 
@@ -31,7 +32,7 @@ userRouter.get("/info/:uid", (req, res) => {
 });
 
 // Get users list
-userRouter.get("/list", (req, res) => {
+userRouter.get("/userlist", (req, res) => {
   getUserList()
     .then((userList) => {
       res.send(userList);
@@ -45,7 +46,7 @@ userRouter.get("/list", (req, res) => {
 userRouter.post("/signin", (req, res) => {
   console.log("sign in account", req.body);
   const userAccount = req.body;
-  signInAcc(userAccount)
+  signIn(userAccount)
     .then((data) => {
       res.send(data);
     })
@@ -60,7 +61,7 @@ userRouter.post("/signin", (req, res) => {
 // Sign up
 userRouter.post("/signup", (req, res) => {
   const user = req.body;
-  signUpAcc(user)
+  signUp(user)
     .then((data) => {
       res.send(data);
     })
@@ -77,7 +78,24 @@ userRouter.post("/signup", (req, res) => {
 // Change user info
 userRouter.post("/changeinfo", (req, res) => {
   const user = req.body;
-  changeInfo(user)
+  changeUserInfo(user)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      if (typeof err == "string") {
+        res.status(400).send(err);
+      }
+      else {
+        res.status(400).send(err.message);
+      }
+    });
+});
+
+// Change password
+userRouter.post("/changepassword", (req, res) => {
+  const userChangePassword = req.body;
+  changePassword(userChangePassword)
     .then((data) => {
       res.send(data);
     })

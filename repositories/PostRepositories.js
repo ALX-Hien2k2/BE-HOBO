@@ -1,7 +1,7 @@
 const { validateCheck } = require("../helps/ValidationBody");
-const HoBoPost = require("../models/HoBoPost");
-const uuid = require("uuid");
-const { findOne, findAll, insertOne, updateOne } = require("../services/DatabaseServices");
+const { infoToChange } = require("../helps/GetChangeInfo");
+const Post = require("../models/Post");
+const { findOne, findAll, insertOne, update_One } = require("../services/DatabaseServices");
 const Collections = require("../services/Collections");
 const ObjectId = require('mongodb').ObjectId;
 
@@ -25,105 +25,23 @@ const getPostDetails = async (post_id) => {
   return promise;
 };
 
-const createPost = async (post) => {
+const getPostList = async (filter) => {
   const promise = new Promise(async (resolve, reject) => {
     try {
-      validateCheck(
-        {
-          roomName: post.roomName,
-          price: post.price,
-          location: post.location,
-          userId: post.userId,
-          hotelName: post.hotelName,
-          isApproved: post.isApproved,
-          numberStar: post.numberStar,
-        },
-        post
-      );
-
-      // Check if user exists
-      const user = await findOne(new Collections().user, { _id: ObjectId(post.userId) });
-      if (!user) {
-        console.log("user not found");
-        reject("User not found");
-      } else {
-        console.log("user found");
-        // Check if user is hotel owner
-        if (user.userType !== 2) {
-          console.log("user is not hotel owner");
-          reject("User is not hotel owner");
-        } else {
-          console.log("user is hotel owner");
-
-          const newPost = new HoBoPost();
-          newPost.setInfo(post);
-
-          try {
-            const insertResult = await insertOne(new Collections().post, newPost);
-            if (insertResult["acknowledged"] === true) {
-              console.log("Insert successfully");
-              try {
-                const findResult = await findOne(new Collections().post, { _id: insertResult["insertedId"] });
-                if (findResult) {
-                  console.log("Find successfully");
-                  resolve(findResult);
-                }
-                else {
-                  console.log("Find failed");
-                  reject("Cannot find post");
-                }
-              } catch (err) {
-                console.log(err);
-                reject(err);
-              }
-            }
-            else {
-              console.log("Insert failed");
-              reject("create post failed");
-            }
-          } catch (err) {
-            console.log(err);
-            reject(err);
-          }
-        }
-      }
-    } catch (err) {
-      reject(err);
-    }
-  });
-  return promise;
-};
-
-const approvePost = async (postId, userId) => {
-  const promise = new Promise((resolve, reject) => {
-    try {
-      // find user by id
-      // check if user is admin
-      // find post by id
-      // check if post is approved
-      resolve({});
-    } catch (err) {
-      reject(err);
-    }
-  });
-  return promise;
-};
-
-const getRoomList = async (filter) => {
-  const promise = new Promise(async (resolve, reject) => {
-    try {
-      const roomList = await findAll(new Collections().post, filter, {
-        roomImg: 1,
+      const postList = await findAll(new Collections().post, filter, {
         roomName: 1,
-        price: 1,
-        location: 1,
         hotelName: 1,
-        numberStar: 1
+        location: 1,
+        price: 1,
+        quantity: 1,
+        starNumber: 1,
+        bed: 1,
+        toilet: 1,
+        thumbnail: 1
       });
 
-      if (roomList) {
-        console.log("roomList ", roomList);
-        resolve(roomList);
+      if (postList) {
+        resolve(postList);
       }
       else {
         console.log("roomList not found");
@@ -136,9 +54,120 @@ const getRoomList = async (filter) => {
   return promise;
 };
 
+const createPost = async (post) => {
+  const promise = new Promise(async (resolve, reject) => {
+    try {
+      validateCheck(
+        {
+          hotelId: post.hotelId,
+          roomName: post.roomName,
+          price: post.price,
+          quantity: post.quantity,
+          bed: post.bed,
+          toilet: post.toilet,
+          thumbnail: post.thumbnail,
+          slider: post.slider,
+          description: post.description
+        },
+        post
+      );
+
+      // Check if hotel exists
+      const resultHotel = await findOne(new Collections().hotel, { _id: ObjectId(post.hotelId) });
+      if (!resultHotel) {
+        console.log("hotel not found");
+        reject("hotel not found");
+      } else {
+        console.log("hotel found");
+
+        const newPost = new Post();
+        newPost.hotelId = resultHotel._id;
+        newPost.hotelName = resultHotel.hotelName;
+        newPost.location = resultHotel.hotelAddress;
+        newPost.starNumber = resultHotel.starNumber;
+        newPost.setInfo(post);
+
+        try {
+          const insertResult = await insertOne(new Collections().post, newPost);
+          if (insertResult["acknowledged"] === true) {
+            console.log("Insert successfully");
+            try {
+              const findResult = await findOne(new Collections().post, { _id: insertResult["insertedId"] });
+              if (findResult) {
+                console.log("Find successfully");
+                resolve(findResult);
+              }
+              else {
+                console.log("Find failed");
+                reject("Cannot find post");
+              }
+            } catch (err) {
+              console.log(err);
+              reject(err);
+            }
+          }
+          else {
+            console.log("Insert failed");
+            reject("create post failed");
+          }
+        } catch (err) {
+          console.log(err);
+          reject(err);
+        }
+      }
+    } catch (err) {
+      console.log(err);
+      reject(err);
+    }
+  });
+  return promise;
+};
+
+// const changePostInfo = async (postChangeInfo) => {
+//   return new Promise(async (resolve, reject) => {
+//     try {
+//       const findResult = await findOne(new Collections().post, { _id: ObjectId(postChangeInfo._id) });
+//       if (!findResult) {
+//         console.log("Post not found");
+//         reject("Post not found");
+//       } else {
+//         console.log("Post found");
+//         const infoToChange = infoToChange(postChangeInfo);
+
+
+//         const updateResult = await update_One(new Collections().post, { _id: ObjectId(postChangeInfo._id) }, postChangeInfo);
+//         if (updateResult["acknowledged"] === true) {
+//           console.log("Update successfully");
+//           try {
+//             const findResult = await findOne(new Collections().post, { _id: ObjectId(postChangeInfo._id) });
+//             if (findResult) {
+//               console.log("Find successfully");
+//               resolve(findResult);
+//             }
+//             else {
+//               console.log("Find failed");
+//               reject("Cannot find post");
+//             }
+//           } catch (err) {
+//             console.log(err);
+//             reject(err);
+//           }
+//         }
+//         else {
+//           console.log("Update failed");
+//           reject("Update failed");
+//         }
+//       }
+//     } catch (err) {
+//       console.log(err);
+//       reject(err);
+//     }
+//   });
+// };
+
 module.exports = {
   createPost,
-  getRoomList,
+  getPostList,
   getPostDetails,
-  approvePost,
+  // approvePost,
 };
