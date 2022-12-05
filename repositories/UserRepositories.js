@@ -1,8 +1,8 @@
 const { validateCheck, validateExistence } = require("../helps/ValidationBody");
-const uuid = require("uuid");
 const User = require("../models/User");
+const Hotel = require("../models/Hotel");
 const bcrypt = require('bcryptjs');
-const { findOne, findAll, insertOne, updateOne } = require("../services/DatabaseServices");
+const { findOne, findAll, insertOne, update_One } = require("../services/DatabaseServices");
 const Collections = require("../services/Collections");
 const ObjectId = require('mongodb').ObjectId;
 
@@ -42,7 +42,7 @@ const getUserList = async () => {
   return promise;
 };
 
-const signInAcc = async (userAccount) => {
+const signIn = async (userAccount) => {
   const promise = new Promise(async (resolve, reject) => {
     try {
       const result = await findOne(new Collections().user, { username: userAccount.username });
@@ -67,7 +67,7 @@ const signInAcc = async (userAccount) => {
   return promise;
 };
 
-const signUpAcc = async (newAccount) => {
+const signUp = async (newAccount) => {
   const promise = new Promise(async (resolve, reject) => {
     try {
       console.log("newAccount", newAccount);
@@ -75,6 +75,7 @@ const signUpAcc = async (newAccount) => {
       validateCheck(
         {
           username: newAccount.username,
+          email: newAccount.email,
           password: newAccount.password,
           phoneNumber: newAccount.phoneNumber,
           userType: newAccount.userType,
@@ -89,6 +90,7 @@ const signUpAcc = async (newAccount) => {
       else {
         // Add info to User class
         const newUser = new User();
+        console.log("User_Id", newUser._id);
 
         // hash password
         const salt = bcrypt.genSaltSync(10);
@@ -96,25 +98,49 @@ const signUpAcc = async (newAccount) => {
 
         // Set user's info
         newUser.password = hash;
-        newUser.setGeneralInfo(newAccount);
+        newUser.setInfo(newAccount);
 
+        // Create a hotel for hotel owner
         if (newAccount.userType === newUser.getTypeUser().Hotel) {
           validateCheck(
             {
               licenseNumber: newAccount.licenseNumber,
               hotelName: newAccount.hotelName,
-              hotelPhoneNumber: newAccount.hotelPhoneNumber,
               hotelAddress: newAccount.hotelAddress,
+              hotelPhoneNumber: newAccount.hotelPhoneNumber,
             },
-            newAccount
-          );
-        }
-        newUser.setHotelOwnerInfo(newAccount);
+            newAccount);
+          newHotel = new Hotel();
+          console.log("Hotel_Id", newHotel._id);
 
+          newUser.hotelId = newHotel._id;
+          newHotel.userId = newUser._id;
+          newHotel.setInfo(newAccount);
+        }
+
+        // Insert to database
         try {
-          const insertResult = await insertOne(new Collections().user, newUser);
-          if (insertResult["acknowledged"] === true) {
-            console.log("Insert successfully");
+          const insertUserResult = await insertOne(new Collections().user, newUser);
+          if (insertUserResult["acknowledged"] === true) {
+            console.log("Insert new user successfully");
+
+            if (newAccount.userType === newUser.getTypeUser().Hotel) {
+              try {
+                const insertHotelResult = await insertOne(new Collections().hotel, newHotel);
+
+                if (insertHotelResult["acknowledged"] === true) {
+                  console.log("Insert new hotel successfully");
+                } else {
+                  console.log("Insert new hotel failed");
+                  reject("Create new hotel failed");
+                }
+
+              } catch (err) {
+                console.log(err);
+                reject(err);
+              }
+            }
+
             try {
               const findResult = await findOne(new Collections().user, { username: newAccount.username });
               if (findResult) {
@@ -129,9 +155,10 @@ const signUpAcc = async (newAccount) => {
               console.log(err);
               reject(err);
             }
+
           }
           else {
-            console.log("Insert failed");
+            console.log("Insert new user failed");
             reject("Sign up failed");
           }
         } catch (err) {
@@ -146,18 +173,11 @@ const signUpAcc = async (newAccount) => {
   return promise;
 };
 
-const changeInfo = async (userChangeInfo) => {
+const changeUserInfo = async (userChangeInfo) => { // no update username, password
   const promise = new Promise(async (resolve, reject) => {
     try {
-      // hash password
-      const salt = bcrypt.genSaltSync(10);
-      const hash = bcrypt.hashSync(userChangeInfo.password, salt);
-
-      // Set user's info
-      userChangeInfo.password = hash;
-
       // Update information
-      const updateResult = await updateOne(new Collections().user, { username: userChangeInfo.username }, userChangeInfo);
+      const updateResult = await update_One(new Collections().user, { username: userChangeInfo.username }, userChangeInfo);
       if (updateResult["matchedCount"] === 0) {
         console.log("user not found!");
         reject("user not found!");
@@ -178,6 +198,7 @@ const changeInfo = async (userChangeInfo) => {
           reject(err);
         }
       }
+
     } catch (err) {
       reject(err);
     }
@@ -185,10 +206,46 @@ const changeInfo = async (userChangeInfo) => {
   return promise;
 };
 
+const changePassword = async (userChangePassword) => {
+  return new Promise(async (resovle, reject) => {
+    try {
+      const result = await findOne(new Collections().user, { _id: ObjectId(userChangePassword["_id"]) });
+      if (result) {
+        console.log("user found");
+        if (!bcrypt.compareSync(userChangePassword.old_password, result.password)) {
+          console.log("Wrong password");
+          reject("Wrong password");
+        }
+        else {
+          // hash password
+          const salt = bcrypt.genSaltSync(10);
+          const hash = bcrypt.hashSync(userChangePassword.new_password, salt);
+
+          const updatePassword = await update_One(new Collections().user, { _id: ObjectId(userChangePassword["_id"]) }, { password: hash });
+          if (updatePassword["matchedCount"] === 0) {
+            console.log("user not found!");
+            reject("Update password failed!");
+          } else {
+            console.log("Update password successfully");
+            resovle("Update password successfully");
+          }
+        }
+      } else {
+        console.log("user not found");
+        reject("User not found");
+      }
+    } catch (err) {
+      console.log(err);
+      reject(err);
+    }
+  });
+};
+
 module.exports = {
   getUserDetails,
-  signInAcc,
+  signIn,
   getUserList,
-  signUpAcc,
-  changeInfo,
+  signUp,
+  changeUserInfo,
+  changePassword,
 };

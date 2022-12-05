@@ -55,6 +55,7 @@ const findOne = async (collectionName, filter) => {
   const promise = new Promise(async (resolve, reject) => {
     try {
       let result = await collection[collectionName].findOne(filter);
+      console.log("result ", result);
       resolve(result);
     } catch (error) {
       console.log(err);
@@ -68,7 +69,7 @@ const findAll = async (collectionName, filter, projection) => {
   const promise = new Promise(async (resolve, reject) => {
     try {
       let result = await collection[collectionName].find(filter).project(projection).toArray();
-      console.log("result ", result);
+      console.log("result: ", result);
       resolve(result);
     } catch (error) {
       console.log(err);
@@ -91,12 +92,12 @@ const insertOne = async (collectionName, obj) => {
   return promise;
 };
 
-const updateOne = async (collectionName, filter, obj) => {
+const update_One = async (collectionName, filter, obj) => {
   const promise = new Promise(async (resolve, reject) => {
     try {
       let result = await collection[collectionName].updateOne(filter, { $set: obj });
       resolve(result);
-    } catch (error) {
+    } catch (err) {
       console.log(err);
       reject(err);
     }
@@ -111,5 +112,5 @@ module.exports = {
   findOne,
   findAll,
   insertOne,
-  updateOne,
+  update_One,
 };
