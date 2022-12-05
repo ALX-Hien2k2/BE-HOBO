@@ -6,13 +6,14 @@ class Mail extends Model {
     this.idMail = initMail.idMail;
     this.toName = initMail.toName;
     this.toEmail = initMail.toEmail;
+    this.fromEmail = initMail.fromEmail;
     this.subject = initMail.subject;
     this.message = initMail.message;
   }
   validation() {
-    const { toName, toEmail, subject, message } = this;
+    const { toEmail, subject, message, fromEmail } = this;
     console.log("This is mail", this);
-    if (!toName || !toEmail || !subject || !message) {
+    if (!toEmail || !fromEmail || !subject || !message) {
       return false;
     }
     return true;

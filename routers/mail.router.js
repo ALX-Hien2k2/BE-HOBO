@@ -11,6 +11,7 @@ mailRouter.post("/sendNewMail", (req, res) => {
     idMail: uuid.v4(),
     toName: req.body.toName,
     toEmail: req.body.toEmail,
+    fromEmail: req.body.fromEmail,
     subject: req.body.subject,
     message: req.body.message,
   });

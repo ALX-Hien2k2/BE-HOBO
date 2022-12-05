@@ -2,9 +2,13 @@ const nodemailer = require("nodemailer");
 // async..await is not allowed in global scope, must use a wrapper
 async function main(mailOptions) {
   try {
-    const { toName, toEmail, subject, message } = mailOptions;
+    const { toName, toEmail, subject, message, fromEmail } = mailOptions;
     // connect to gmail
-    console.log("Connecting to gmail...",process.env.MAIL_USER,process.env.MAIL_PASS);
+    console.log(
+      "Connecting to gmail...",
+      process.env.MAIL_USER,
+      process.env.MAIL_PASS
+    );
     let transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -14,7 +18,7 @@ async function main(mailOptions) {
     });
     // send mail with defined transport object
     let info = await transporter.sendMail({
-      from: '"HOBO 🏷" <hobovn.website@gmail.com>', // sender address
+      from: `"HOBO 🏷" <${fromEmail}>`, // sender address
       to: toEmail, // list of receivers
       subject: subject, // Subject line
       text: message,
