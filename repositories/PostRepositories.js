@@ -1,11 +1,11 @@
 const { validateCheck } = require("../helps/ValidationBody");
 const { infoToChange } = require("../helps/GetChangeInfo");
 const Post = require("../models/Post");
-const { findOne, findAll, insertOne, update_One } = require("../services/DatabaseServices");
+const { findOne, findAll, insertOne, update_One, delete_One } = require("../services/DatabaseServices");
 const Collections = require("../services/Collections");
 const ObjectId = require('mongodb').ObjectId;
 
-const getPostDetails = async (post_id) => {
+const getPostDetail = async (post_id) => {
   const promise = new Promise(async (resolve, reject) => {
     try {
       const postInfo = await findOne(new Collections().post, { _id: ObjectId(post_id) });
@@ -123,51 +123,76 @@ const createPost = async (post) => {
   return promise;
 };
 
-// const changePostInfo = async (postChangeInfo) => {
-//   return new Promise(async (resolve, reject) => {
-//     try {
-//       const findResult = await findOne(new Collections().post, { _id: ObjectId(postChangeInfo._id) });
-//       if (!findResult) {
-//         console.log("Post not found");
-//         reject("Post not found");
-//       } else {
-//         console.log("Post found");
-//         const infoToChange = infoToChange(postChangeInfo);
+const changePostInfo = async (postChangeInfo) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const findResult = await findOne(new Collections().post, { _id: ObjectId(postChangeInfo._id) });
+      if (!findResult) {
+        console.log("Post not found");
+        reject("Post not found");
+      } else {
+        console.log("Post found");
+        const changeInfo = infoToChange(postChangeInfo);
+        console.log("changeInfo", changeInfo);
+        try {
+          const updateResult = await update_One(new Collections().post, { _id: ObjectId(postChangeInfo._id) }, changeInfo);
+          if (updateResult["acknowledged"] === true) {
+            console.log("Update successfully");
+            try {
+              const findResult = await findOne(new Collections().post, { _id: ObjectId(postChangeInfo._id) });
+              if (findResult) {
+                console.log("Find successfully");
+                resolve(findResult);
+              }
+              else {
+                console.log("Find failed");
+                reject("Cannot find post");
+              }
+            } catch (err) {
+              console.log(err);
+              reject(err);
+            }
+          }
+          else {
+            console.log("Update failed");
+            reject("Update failed");
+          }
+        } catch (err) {
+          console.log(err);
+          reject(err);
+        }
+      }
+    } catch (err) {
+      console.log(err);
+      reject(err);
+    }
+  });
+};
 
-
-//         const updateResult = await update_One(new Collections().post, { _id: ObjectId(postChangeInfo._id) }, postChangeInfo);
-//         if (updateResult["acknowledged"] === true) {
-//           console.log("Update successfully");
-//           try {
-//             const findResult = await findOne(new Collections().post, { _id: ObjectId(postChangeInfo._id) });
-//             if (findResult) {
-//               console.log("Find successfully");
-//               resolve(findResult);
-//             }
-//             else {
-//               console.log("Find failed");
-//               reject("Cannot find post");
-//             }
-//           } catch (err) {
-//             console.log(err);
-//             reject(err);
-//           }
-//         }
-//         else {
-//           console.log("Update failed");
-//           reject("Update failed");
-//         }
-//       }
-//     } catch (err) {
-//       console.log(err);
-//       reject(err);
-//     }
-//   });
-// };
+const deletePost = async (post_id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const deleteResult = await delete_One(new Collections().post, { _id: ObjectId(post_id) });
+      if (deleteResult["deletedCount"] === 1) {
+        console.log("Delete successfully");
+        resolve("Delete successfully");
+      }
+      else {
+        console.log("Delete failed");
+        reject("Delete failed");
+      }
+    } catch (err) {
+      console.log(err);
+      reject(err);
+    }
+  });
+};
 
 module.exports = {
   createPost,
   getPostList,
-  getPostDetails,
+  getPostDetail,
+  changePostInfo,
+  deletePost,
   // approvePost,
 };

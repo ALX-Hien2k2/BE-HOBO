@@ -105,6 +105,30 @@ const update_One = async (collectionName, filter, obj) => {
   return promise;
 };
 
+const delete_One = async (collectionName, filter) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let result = await collection[collectionName].deleteOne(filter);
+      resolve(result);
+    } catch (err) {
+      console.log(err);
+      reject(err);
+    }
+  });
+};
+
+const delete_All = async (collectionName, filter) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let result = await collection[collectionName].deleteMany(filter);
+      resolve(result);
+    } catch (err) {
+      console.log(err);
+      reject(err);
+    }
+  });
+};
+
 module.exports = {
   connectToMongoDb,
   collection,
@@ -113,4 +137,6 @@ module.exports = {
   findAll,
   insertOne,
   update_One,
+  delete_One,
+  delete_All,
 };
