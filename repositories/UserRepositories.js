@@ -1,6 +1,5 @@
 const { validateCheck, validateExistence } = require("../helps/ValidationBody");
 const User = require("../models/User");
-const Hotel = require("../models/Hotel");
 const bcrypt = require('bcryptjs');
 const { findOne, findAll, insertOne, update_One } = require("../services/DatabaseServices");
 const Collections = require("../services/Collections");
@@ -100,46 +99,11 @@ const signUp = async (newAccount) => {
         newUser.password = hash;
         newUser.setInfo(newAccount);
 
-        // Create a hotel for hotel owner
-        if (newAccount.userType === newUser.getTypeUser().Hotel) {
-          validateCheck(
-            {
-              licenseNumber: newAccount.licenseNumber,
-              hotelName: newAccount.hotelName,
-              hotelAddress: newAccount.hotelAddress,
-              hotelPhoneNumber: newAccount.hotelPhoneNumber,
-            },
-            newAccount);
-          newHotel = new Hotel();
-          console.log("Hotel_Id", newHotel._id);
-
-          newUser.hotelId = newHotel._id;
-          newHotel.userId = newUser._id;
-          newHotel.setInfo(newAccount);
-        }
-
         // Insert to database
         try {
           const insertUserResult = await insertOne(new Collections().user, newUser);
           if (insertUserResult["acknowledged"] === true) {
             console.log("Insert new user successfully");
-
-            if (newAccount.userType === newUser.getTypeUser().Hotel) {
-              try {
-                const insertHotelResult = await insertOne(new Collections().hotel, newHotel);
-
-                if (insertHotelResult["acknowledged"] === true) {
-                  console.log("Insert new hotel successfully");
-                } else {
-                  console.log("Insert new hotel failed");
-                  reject("Create new hotel failed");
-                }
-
-              } catch (err) {
-                console.log(err);
-                reject(err);
-              }
-            }
 
             try {
               const findResult = await findOne(new Collections().user, { username: newAccount.username });
