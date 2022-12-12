@@ -2,8 +2,9 @@ const express = require("express");
 const {
   createPost,
   getPostList,
+  getPostListByHotelId,
+  getPostListByHotelId_Except,
   getPostDetail,
-  approvePost,
   changePostInfo,
   deletePost,
 } = require("../repositories/PostRepositories");
@@ -25,6 +26,31 @@ postRouter.get("/postlist", (req, res) => {
   const filter = req.body;
   console.log(filter);
   getPostList(filter)
+    .then((postList) => {
+      res.send(postList);
+    })
+    .catch((err) => {
+      res.status(400).send(err);
+    });
+});
+
+postRouter.get("/postlist/:hotel_id", (req, res) => {
+  const hotel_id = req.params.hotel_id;
+  console.log(hotel_id);
+  getPostListByHotelId(hotel_id)
+    .then((postList) => {
+      res.send(postList);
+    })
+    .catch((err) => {
+      res.status(400).send(err);
+    });
+});
+
+postRouter.get("/postlistexcept", (req, res) => {
+  const { hotel_id, post_id } = req.body;
+  console.log("hotel_id", hotel_id);
+  console.log("post_id", post_id);
+  getPostListByHotelId_Except(hotel_id, post_id)
     .then((postList) => {
       res.send(postList);
     })
@@ -73,14 +99,6 @@ postRouter.delete("/deletepost/:postid", (req, res) => {
       }
       res.status(400).send(err);
     });
-});
-
-postRouter.post("/approve/:id", (req, res) => {
-  const { id } = req.params;
-  const { userId } = req.body;
-  approvePost(id, userId)
-    .then((data) => { })
-    .catch((err) => { });
 });
 
 module.exports = postRouter;

@@ -2,7 +2,6 @@ const express = require("express");
 const {
   getUserDetails,
   signIn,
-  getUserList,
   signUp,
   changeUserInfo,
   changePassword,
@@ -25,17 +24,6 @@ userRouter.get("/info/:uid", (req, res) => {
   getUserDetails(user_id)
     .then((userInfo) => {
       res.send(userInfo);
-    })
-    .catch((err) => {
-      res.status(400).send(err);
-    });
-});
-
-// Get users list
-userRouter.get("/userlist", (req, res) => {
-  getUserList()
-    .then((userList) => {
-      res.send(userList);
     })
     .catch((err) => {
       res.status(400).send(err);

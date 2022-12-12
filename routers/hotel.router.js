@@ -1,25 +1,15 @@
 const express = require("express");
 const {
     getHotelDetail,
-    getHotelList,
     changeHotelInfo,
-    createHotel
+    createHotel,
+    deleteHotel,
 } = require("../repositories/HotelRepositories");
 const hotelRouter = express.Router();
 
-hotelRouter.get("/info/:id", (req, res) => {
-    const hotel_id = req.params.id;
-    getHotelDetail(hotel_id)
-        .then((data) => {
-            res.send(data);
-        })
-        .catch((err) => {
-            res.status(400).send(err);
-        });
-});
-
-hotelRouter.get("/hotellist", (req, res) => {
-    getHotelList()
+hotelRouter.get("/info/:hotel_id", (req, res) => {
+    const hotelId = req.params.hotel_id;
+    getHotelDetail(hotelId)
         .then((data) => {
             res.send(data);
         })
@@ -42,6 +32,17 @@ hotelRouter.post("/changehotelinfo", (req, res) => {
 hotelRouter.post("/createhotel", (req, res) => {
     const newHotelInfo = req.body;
     createHotel(newHotelInfo)
+        .then((data) => {
+            res.send(data);
+        })
+        .catch((err) => {
+            res.status(400).send(err);
+        });
+});
+
+hotelRouter.delete("/deletehotel/:hotel_id", (req, res) => {
+    const hotel_id = req.params.hotel_id;
+    deleteHotel(hotel_id)
         .then((data) => {
             res.send(data);
         })

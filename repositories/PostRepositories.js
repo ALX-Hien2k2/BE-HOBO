@@ -10,6 +10,7 @@ const getPostDetail = async (post_id) => {
     try {
       const postInfo = await findOne(new Collections().post, { _id: ObjectId(post_id) });
       if (postInfo) {
+
         console.log("postInfo", postInfo);
         resolve(postInfo);
       }
@@ -27,8 +28,13 @@ const getPostDetail = async (post_id) => {
 
 const getPostList = async (filter) => {
   const promise = new Promise(async (resolve, reject) => {
+    console.log("filter before: ", filter);
+    filter["isApproved"] = true;
+    console.log("filter after: ", filter);
     try {
       const postList = await findAll(new Collections().post, filter, {
+        _id: 1,
+        hotelId: 1,
         roomName: 1,
         hotelName: 1,
         location: 1,
@@ -52,6 +58,66 @@ const getPostList = async (filter) => {
     }
   });
   return promise;
+};
+
+const getPostListByHotelId = async (hotel_id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const postList = await findAll(new Collections().post, { hotelId: ObjectId(hotel_id), isApproved: true }, {
+        _id: 1,
+        hotelId: 1,
+        roomName: 1,
+        hotelName: 1,
+        location: 1,
+        price: 1,
+        quantity: 1,
+        starNumber: 1,
+        bed: 1,
+        toilet: 1,
+        thumbnail: 1
+      });
+
+      if (postList) {
+        resolve(postList);
+      }
+      else {
+        console.log("roomList not found");
+        reject("roomList not found");
+      }
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+const getPostListByHotelId_Except = async (hotel_id, post_id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const postList = await findAll(new Collections().post, { hotelId: ObjectId(hotel_id), isApproved: true, _id: { $ne: ObjectId(post_id) } }, {
+        _id: 1,
+        hotelId: 1,
+        roomName: 1,
+        hotelName: 1,
+        location: 1,
+        price: 1,
+        quantity: 1,
+        starNumber: 1,
+        bed: 1,
+        toilet: 1,
+        thumbnail: 1
+      });
+
+      if (postList) {
+        resolve(postList);
+      }
+      else {
+        console.log("roomList not found");
+        reject("roomList not found");
+      }
+    } catch (err) {
+      reject(err);
+    }
+  });
 };
 
 const createPost = async (post) => {
@@ -133,10 +199,11 @@ const changePostInfo = async (postChangeInfo) => {
       } else {
         console.log("Post found");
         const changeInfo = infoToChange(postChangeInfo);
+        changeInfo.updatedDate = new Date().toLocaleString();
         console.log("changeInfo", changeInfo);
         try {
           const updateResult = await update_One(new Collections().post, { _id: ObjectId(postChangeInfo._id) }, changeInfo);
-          if (updateResult["acknowledged"] === true) {
+          if (updateResult["matchedCount"] === true) {
             console.log("Update successfully");
             try {
               const findResult = await findOne(new Collections().post, { _id: ObjectId(postChangeInfo._id) });
@@ -188,11 +255,14 @@ const deletePost = async (post_id) => {
   });
 };
 
+
+
 module.exports = {
   createPost,
   getPostList,
+  getPostListByHotelId,
+  getPostListByHotelId_Except,
   getPostDetail,
   changePostInfo,
   deletePost,
-  // approvePost,
 };

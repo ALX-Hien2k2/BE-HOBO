@@ -1,10 +1,9 @@
-const { findOne, findAll, update_One, insertOne } = require("../services/DatabaseServices");
+const { findOne, findAll, update_One, insertOne, delete_One, delete_All } = require("../services/DatabaseServices");
 const { validateCheck } = require("../helps/ValidationBody");
 const Collections = require("../services/Collections");
 const ObjectId = require('mongodb').ObjectId;
-const infoToChange = require("../helps/GetChangeInfo");
+const { infoToChange } = require("../helps/GetChangeInfo");
 const Hotel = require("../models/Hotel");
-
 
 const getHotelDetail = async (hotel_id) => {
     return new Promise(async (resolve, reject) => {
@@ -24,47 +23,24 @@ const getHotelDetail = async (hotel_id) => {
     });
 };
 
-const getHotelList = async (filter) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const hotelList = await findAll(new Collections().hotel, filter, {
-                hotelName: 1,
-                hotelAddress: 1,
-                hotelPhoneNumber: 1,
-                starNumber: 1,
-                descriptionImage: 1
-            });
-
-            if (hotelList) {
-                resolve(hotelList);
-            }
-            else {
-                console.log("hotelList not found");
-                reject("hotelList not found");
-            }
-        } catch (err) {
-            reject(err);
-        }
-    });
-};
-
 const changeHotelInfo = async (hotelChangeInfo) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const findResult = await findOne(new Collections().hotel, { _id: ObjectId(hotelChangeInfo._id) });
+            const findResult = await findOne(new Collections().hotel, { _id: ObjectId(hotelChangeInfo.hotelId) });
             if (!findResult) {
                 console.log("hotel not found");
                 reject("hotel not found");
             } else {
                 console.log("hotel found");
                 const changeInfo = infoToChange(hotelChangeInfo);
+                changeInfo.updatedDate = new Date().toLocaleString();
                 console.log("changeInfo", changeInfo);
                 try {
-                    const updateResult = await update_One(new Collections().hotel, { _id: ObjectId(hotelChangeInfo._id) }, changeInfo);
+                    const updateResult = await update_One(new Collections().hotel, { _id: ObjectId(hotelChangeInfo.hotelId) }, changeInfo);
                     if (updateResult["acknowledged"] === true) {
                         console.log("Update successfully");
                         try {
-                            const findResult = await findOne(new Collections().hotel, { _id: ObjectId(hotelChangeInfo._id) });
+                            const findResult = await findOne(new Collections().hotel, { _id: ObjectId(hotelChangeInfo.hotelId) });
                             if (findResult) {
                                 console.log("Find successfully");
                                 resolve(findResult);
@@ -112,7 +88,7 @@ const createHotel = async (newHotelInfo) => {
             const user = await findOne(new Collections().user, { _id: ObjectId(newHotelInfo.userId) });
             if (user) {
                 // Check if user is a hotel owner
-                if (user.userType === "hotelOwner") {
+                if (user.userType === 2) {
                     // Check if hotel owner already have a hotel
                     if (user.hotelId === null) {
                         newHotel = new Hotel();
@@ -122,7 +98,7 @@ const createHotel = async (newHotelInfo) => {
                         newHotel.setInfo(newHotelInfo);
 
                         // Update user's hotelId
-                        const updateUserResult = await update_One(new Collections().user, { _id: ObjectId(newHotelInfo.userId) }, { hotelId: newHotel._id });
+                        const updateUserResult = await update_One(new Collections().user, { _id: ObjectId(newHotelInfo.userId) }, { hotelId: newHotel._id, updatedDate: new Date().toLocaleString() });
                         if (updateUserResult["acknowledged"] === true) {
                             console.log("Update user's hotelId successfully");
                             // Add hotel's info to database
@@ -166,9 +142,47 @@ const createHotel = async (newHotelInfo) => {
     });
 };
 
+const deleteHotel = async (hotel_id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const findHotelResult = await findOne(new Collections().hotel, { _id: ObjectId(hotel_id) });
+            if (findHotelResult) {
+                console.log("Hotel found");
+                // Delete rooms
+                const deleteRoomResult = await delete_All(new Collections().post, { hotelId: ObjectId(hotel_id) });
+                console.log("Deleted rooms", deleteRoomResult["deletedCount"]);
+                // Delete hotel
+                const deleteHotelResult = await delete_One(new Collections().hotel, { _id: ObjectId(hotel_id) });
+                if (deleteHotelResult["deletedCount"] === 1) {
+                    console.log("Delete hotel successfully");
+                    const updateUserHotelIdResult = await update_One(new Collections().user, { hotelId: ObjectId(hotel_id) }, { hotelId: null, updatedDate: new Date().toLocaleString() });
+                    if (updateUserHotelIdResult["matchedCount"] === 1) {
+                        console.log("Update user's hotelId successfully");
+                        resolve("Delete hotel and update user's hotel_id successfully");
+                    }
+                    else {
+                        console.log("Update user's hotelId failed");
+                        reject("Delete hotel successfully but update user's hotel_id failed");
+                    }
+                }
+                else {
+                    console.log("Delete failed");
+                    reject("Delete failed");
+                }
+            } else {
+                console.log("Hotel not found");
+                reject("Hotel not found");
+            }
+        } catch (err) {
+            console.log(err);
+            reject(err);
+        }
+    });
+};
+
 module.exports = {
     getHotelDetail,
-    getHotelList,
     changeHotelInfo,
     createHotel,
+    deleteHotel,
 };

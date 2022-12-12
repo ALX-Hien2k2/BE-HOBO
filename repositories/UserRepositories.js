@@ -23,24 +23,6 @@ const getUserDetails = async (user_id) => {
   return promise;
 };
 
-const getUserList = async () => {
-  const promise = new Promise(async (resolve, reject) => {
-    try {
-      const userList = await findAll(new Collections().user, {});
-      if (userList) {
-        console.log("userList ", userList);
-        resolve(userList);
-      }
-      else {
-        reject("userList not found");
-      }
-    } catch (err) {
-      reject(err);
-    }
-  });
-  return promise;
-};
-
 const signIn = async (userAccount) => {
   const promise = new Promise(async (resolve, reject) => {
     try {
@@ -141,6 +123,7 @@ const changeUserInfo = async (userChangeInfo) => { // no update username, passwo
   const promise = new Promise(async (resolve, reject) => {
     try {
       // Update information
+      userChangeInfo.updatedDate = new Date().toLocaleString();
       const updateResult = await update_One(new Collections().user, { username: userChangeInfo.username }, userChangeInfo);
       if (updateResult["matchedCount"] === 0) {
         console.log("user not found!");
@@ -185,7 +168,7 @@ const changePassword = async (userChangePassword) => {
           const salt = bcrypt.genSaltSync(10);
           const hash = bcrypt.hashSync(userChangePassword.new_password, salt);
 
-          const updatePassword = await update_One(new Collections().user, { _id: ObjectId(userChangePassword["_id"]) }, { password: hash });
+          const updatePassword = await update_One(new Collections().user, { _id: ObjectId(userChangePassword["_id"]) }, { password: hash, updatedDate: new Date().toLocaleString() });
           if (updatePassword["matchedCount"] === 0) {
             console.log("user not found!");
             reject("Update password failed!");
@@ -208,7 +191,6 @@ const changePassword = async (userChangePassword) => {
 module.exports = {
   getUserDetails,
   signIn,
-  getUserList,
   signUp,
   changeUserInfo,
   changePassword,

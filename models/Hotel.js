@@ -14,8 +14,6 @@ class Hotel extends Model {
         this.starNumber = null;
         this.slider = null; // array
         this.utilities = null; // array
-
-        this.status = true; // true: active (default), false: inactive
     }
 
     setInfo(obj) {

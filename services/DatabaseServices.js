@@ -55,9 +55,8 @@ const findOne = async (collectionName, filter) => {
   const promise = new Promise(async (resolve, reject) => {
     try {
       let result = await collection[collectionName].findOne(filter);
-      console.log("result ", result);
       resolve(result);
-    } catch (error) {
+    } catch (err) {
       console.log(err);
       reject(err);
     }
@@ -69,7 +68,6 @@ const findAll = async (collectionName, filter, projection) => {
   const promise = new Promise(async (resolve, reject) => {
     try {
       let result = await collection[collectionName].find(filter).project(projection).toArray();
-      console.log("result: ", result);
       resolve(result);
     } catch (error) {
       console.log(err);
