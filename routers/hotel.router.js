@@ -36,6 +36,7 @@ hotelRouter.post("/createhotel", (req, res) => {
             res.send(data);
         })
         .catch((err) => {
+            console.log("error 1")
             res.status(400).send(err);
         });
 });
