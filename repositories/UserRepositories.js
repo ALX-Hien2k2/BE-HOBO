@@ -188,10 +188,45 @@ const changePassword = async (userChangePassword) => {
   });
 };
 
+const resetPassword = async (resetObj) => {
+  return new Promise(async (resovle, reject) => {
+    try {
+      const findResult = await findOne(new Collections().user, { username: resetObj.username });
+      if (!findResult) {
+        console.log("user not found!");
+        reject("User not found!");
+      }
+      else if (!findResult.confirmCode || (findResult.confirmCode !== resetObj.confirmCode)) {
+        console.log("Wrong confirm code!");
+        reject("Wrong confirm code!");
+      }
+      else {
+        console.log("user found");
+        // hash password
+        const salt = bcrypt.genSaltSync(10);
+        const hash = bcrypt.hashSync(resetObj.resetpassword, salt);
+
+        const updateResult = await update_One(new Collections().user, { username: resetObj.username }, { password: hash, updatedDate: new Date().toLocaleString() });
+        if (updateResult["matchedCount"] === 0) {
+          console.log("user not found!");
+          reject("Update password failed!");
+        } else {
+          console.log("Reset password successfully");
+          resovle("Reset password successfully");
+        }
+      }
+    } catch (err) {
+      console.log(err);
+      reject(err);
+    }
+  });
+};
+
 module.exports = {
   getUserDetails,
   signIn,
   signUp,
   changeUserInfo,
   changePassword,
+  resetPassword,
 };

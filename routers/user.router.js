@@ -5,6 +5,7 @@ const {
   signUp,
   changeUserInfo,
   changePassword,
+  resetPassword,
 } = require("../repositories/UserRepositories");
 const userRouter = express.Router();
 
@@ -86,6 +87,23 @@ userRouter.post("/changepassword", (req, res) => {
   changePassword(userChangePassword)
     .then((data) => {
       res.send(data);
+    })
+    .catch((err) => {
+      if (typeof err == "string") {
+        res.status(400).send(err);
+      }
+      else {
+        res.status(400).send(err.message);
+      }
+    });
+});
+
+// Reset password
+userRouter.post("/resetpassword", (req, res) => {
+  const resetObj = req.body;
+  resetPassword(resetObj)
+    .then((status) => {
+      res.send(status);
     })
     .catch((err) => {
       if (typeof err == "string") {

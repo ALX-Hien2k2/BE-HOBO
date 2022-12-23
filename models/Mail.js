@@ -4,7 +4,6 @@ class Mail extends Model {
   constructor(initMail) {
     super();
     this.idMail = initMail.idMail;
-    this.toName = initMail.toName;
     this.toEmail = initMail.toEmail;
     this.fromEmail = initMail.fromEmail;
     this.subject = initMail.subject;
