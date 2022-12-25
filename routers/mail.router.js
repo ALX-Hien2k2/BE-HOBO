@@ -1,7 +1,7 @@
 const express = require("express");
 const { validateCheck } = require("../helps/ValidationBody");
 const Mail = require("../models/Mail");
-const { sendMail, mailConfirm, codeConfirm } = require("../repositories/MailRepositories");
+const { sendMail, codeConfirm, sendMailConfirm } = require("../repositories/MailRepositories");
 const uuid = require("uuid");
 const mailRouter = express.Router();
 
@@ -32,7 +32,7 @@ mailRouter.post("/emailConfirm", (req, res) => {
   try {
     const confirmObj = req.body;
     console.log("confirm object: ", confirmObj);
-    mailConfirm(confirmObj)
+    sendMailConfirm(confirmObj)
       .then((data) => {
         res.send("Confirm code sent");
       })
