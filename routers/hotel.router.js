@@ -14,7 +14,7 @@ hotelRouter.get("/info/:hotel_id", (req, res) => {
             res.send(data);
         })
         .catch((err) => {
-            res.status(400).send(err);
+            res.status(err.status).send(err);
         });
 });
 
@@ -25,7 +25,7 @@ hotelRouter.post("/changehotelinfo", (req, res) => {
             res.send(data);
         })
         .catch((err) => {
-            res.status(400).send
+            res.status(err.status).send(err);
         });
 });
 
@@ -36,7 +36,7 @@ hotelRouter.post("/createhotel", (req, res) => {
             res.send(data);
         })
         .catch((err) => {
-            res.status(400).send(err);
+            res.status(err.status).send(err);
         });
 });
 
@@ -47,7 +47,7 @@ hotelRouter.delete("/deletehotel/:hotel_id", (req, res) => {
             res.send(data);
         })
         .catch((err) => {
-            res.status(400).send(err);
+            res.status(err.status).send(err);
         });
 });
 

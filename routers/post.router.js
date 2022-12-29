@@ -18,7 +18,7 @@ postRouter.get("/info/:id", (req, res) => {
       res.send(post);
     })
     .catch((err) => {
-      res.status(400).send(err);
+      res.status(err.status).send(err);
     });
 });
 
@@ -30,7 +30,7 @@ postRouter.get("/postlist", (req, res) => {
       res.send(postList);
     })
     .catch((err) => {
-      res.status(400).send(err);
+      res.status(err.status).send(err);
     });
 });
 
@@ -42,7 +42,7 @@ postRouter.get("/postlist/:hotel_id", (req, res) => {
       res.send(postList);
     })
     .catch((err) => {
-      res.status(400).send(err);
+      res.status(err.status).send(err);
     });
 });
 
@@ -55,7 +55,7 @@ postRouter.get("/postlistexcept", (req, res) => {
       res.send(postList);
     })
     .catch((err) => {
-      res.status(400).send(err);
+      res.status(err.status).send(err);
     });
 });
 
@@ -66,10 +66,7 @@ postRouter.post("/createpost", (req, res) => {
       res.send(data);
     })
     .catch((err) => {
-      if (typeof err == "object") {
-        res.status(400).send(err.message);
-      }
-      res.status(400).send(err);
+      res.status(err.status).send(err);
     });
 });
 
@@ -80,10 +77,7 @@ postRouter.post("/changeinfo", (req, res) => {
       res.send(data);
     })
     .catch((err) => {
-      if (typeof err == "object") {
-        res.status(400).send(err.message);
-      }
-      res.status(400).send(err);
+      res.status(err.status).send(err);
     });
 });
 
@@ -94,10 +88,7 @@ postRouter.delete("/deletepost/:postid", (req, res) => {
       res.send(data);
     })
     .catch((err) => {
-      if (typeof err == "object") {
-        res.status(400).send(err.message);
-      }
-      res.status(400).send(err);
+      res.status(err.status).send(err);
     });
 });
 

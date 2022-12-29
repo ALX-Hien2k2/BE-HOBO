@@ -12,7 +12,10 @@ const createComment = async (newComment) => {
             const findHotelResult = await findOne(new Collections().hotel, { _id: ObjectId(newComment.hotelId) });
             if (!findUserResult || !findHotelResult) {
                 console.log("User or Hotel not found");
-                reject("User or Hotel not found");
+                reject({
+                    status: 404,
+                    message: "User or Hotel not found"
+                });
             }
             else {
                 newCmt = new Comment();
@@ -24,30 +27,45 @@ const createComment = async (newComment) => {
                     const insertCommentResult = await insertOne(new Collections().comment, newCmt);
                     if (insertCommentResult["acknowledged"] === false) {
                         console.log("Create comment fail");
-                        reject("Create comment fail");
+                        reject({
+                            status: 400,
+                            message: "Create comment fail"
+                        });
                     } else {
                         try {
                             const findCommentResult = await findOne(new Collections().comment, { _id: ObjectId(insertCommentResult["insertedId"]) });
                             if (!findCommentResult) {
                                 console.log("Comment not found");
-                                reject("Comment not found");
+                                reject({
+                                    status: 404,
+                                    message: "Comment not found"
+                                });
                             } else {
                                 console.log("Create comment successfully");
                                 resolve(findCommentResult);
                             }
                         } catch (err) {
-                            console.log(err);
-                            reject(err);
+                            console.log("err", err);
+                            reject({
+                                status: 400,
+                                message: err.message
+                            });
                         }
                     }
                 } catch (err) {
-                    console.log(err);
-                    reject(err);
+                    console.log("err", err);
+                    reject({
+                        status: 400,
+                        message: err.message
+                    });
                 }
             }
         } catch (err) {
-            console.log(err);
-            reject(err);
+            console.log("err", err);
+            reject({
+                status: 400,
+                message: err.message
+            });
         }
     });
 };
@@ -58,7 +76,10 @@ const getCommentsByHotelId = async (hotel_id) => {
             const findHotelResult = await findOne(new Collections().hotel, { _id: ObjectId(hotel_id) });
             if (!findHotelResult) {
                 console.log("Hotel not found");
-                reject("Hotel not found");
+                reject({
+                    status: 404,
+                    message: "Hotel not found"
+                });
             }
             else {
                 console.log("Hotel found");
@@ -69,12 +90,18 @@ const getCommentsByHotelId = async (hotel_id) => {
                     resolve(findCommentResult);
                 } else {
                     console.log("Comments not found");
-                    reject("Comments not found");
+                    reject({
+                        status: 404,
+                        message: "Hotel not found"
+                    });
                 }
             }
         } catch (err) {
-            console.log(err);
-            reject(err);
+            console.log("err", err);
+            reject({
+                status: 400,
+                message: err.message
+            });
         }
     });
 };
@@ -89,15 +116,24 @@ const deleteComment = async (comment_id) => {
             }
             else if (deleteResult["deletedCount"] === 0) {
                 console.log("Comment not found");
-                reject("Comment not found");
+                reject({
+                    status: 404,
+                    message: "Comment not found"
+                });
             }
             else {
                 console.log("Delete comment fail");
-                reject("Delete comment fail");
+                reject({
+                    status: 400,
+                    message: "Delete comment fail"
+                });
             }
         } catch (err) {
-            console.log(err);
-            reject(err);
+            console.log("err", err);
+            reject({
+                status: 400,
+                message: err.message
+            });
         }
     });
 };

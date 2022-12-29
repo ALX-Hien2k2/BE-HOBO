@@ -13,10 +13,18 @@ const getUserList_Admin = async () => {
                 resolve(userList);
             }
             else {
-                reject("userList not found");
+                console.log("userList not found");
+                reject({
+                    status: 404,
+                    message: "userList not found"
+                });
             }
         } catch (err) {
-            reject(err);
+            console.log("err", err);
+            reject({
+                status: 400,
+                message: err.message
+            });
         }
     });
     return promise;
@@ -40,10 +48,17 @@ const getHotelList_Admin = async (filter) => {
             }
             else {
                 console.log("hotelList not found");
-                reject("hotelList not found");
+                reject({
+                    status: 404,
+                    message: "hotelList not found"
+                });
             }
         } catch (err) {
-            reject(err);
+            console.log("err", err);
+            reject({
+                status: 400,
+                message: err.message
+            });
         }
     });
 };
@@ -59,10 +74,17 @@ const getPostList_Admin = async (filter) => {
             }
             else {
                 console.log("roomList not found");
-                reject("roomList not found");
+                reject({
+                    status: 404,
+                    message: "roomList not found"
+                });
             }
         } catch (err) {
-            reject(err);
+            console.log("err", err);
+            reject({
+                status: 400,
+                message: err.message
+            });
         }
     });
     return promise;
@@ -78,10 +100,17 @@ const getPostListByHotelId_Admin = async (hotel_id) => {
             }
             else {
                 console.log("roomList not found");
-                reject("roomList not found");
+                reject({
+                    status: 404,
+                    message: "roomList not found"
+                });
             }
         } catch (err) {
-            reject(err);
+            console.log("err", err);
+            reject({
+                status: 400,
+                message: err.message
+            });
         }
     });
 };
@@ -96,10 +125,17 @@ const getCommentList_Admin = async (filter) => {
             }
             else {
                 console.log("commentList not found");
-                reject("commentList not found");
+                reject({
+                    status: 404,
+                    message: "commentList not found"
+                });
             }
         } catch (err) {
-            reject(err);
+            console.log("err", err);
+            reject({
+                status: 400,
+                message: err.message
+            });
         }
     });
 };
@@ -110,7 +146,10 @@ const approvePost = async (post_id) => {
             const findPostResult = await findOne(new Collections().post, { _id: ObjectId(post_id) });
             if (!findPostResult) {
                 console.log("Post not found");
-                reject("Post not found");
+                reject({
+                    status: 404,
+                    message: "Post not found"
+                });
             } else {
                 if (findPostResult.isApproved === false) {
                     const updateResult = await update_One(new Collections().post, { _id: ObjectId(post_id) }, { isApproved: true });
@@ -120,16 +159,25 @@ const approvePost = async (post_id) => {
                     }
                     else {
                         console.log("Approve post failed");
-                        reject("Approve post failed");
+                        reject({
+                            status: 400,
+                            message: "Approve post failed"
+                        });
                     }
                 } else {
                     console.log("Post is already approved");
-                    reject("Post is already approved");
+                    reject({
+                        status: 400,
+                        message: "Post is already approved"
+                    });
                 }
             }
         } catch (err) {
-            console.log(err);
-            reject(err);
+            console.log("err", err);
+            reject({
+                status: 400,
+                message: err.message
+            });
         }
     });
 };
@@ -140,7 +188,10 @@ const disapprovePost = async (post_id) => {
             const findPostResult = await findOne(new Collections().post, { _id: ObjectId(post_id) });
             if (!findPostResult) {
                 console.log("Post not found");
-                reject("Post not found");
+                reject({
+                    status: 404,
+                    message: "Post not found"
+                });
             } else {
                 if (findPostResult.isApproved === true) {
                     const updateResult = await update_One(new Collections().post, { _id: ObjectId(post_id) }, { isApproved: false });
@@ -150,16 +201,25 @@ const disapprovePost = async (post_id) => {
                     }
                     else {
                         console.log("Disapprove post failed");
-                        reject("Disapprove post failed");
+                        reject({
+                            status: 400,
+                            message: "Disapprove post failed"
+                        });
                     }
                 } else {
                     console.log("Post is already disapproved");
-                    reject("Post is already disapproved");
+                    reject({
+                        status: 400,
+                        message: "Post is already disapproved"
+                    });
                 }
             }
         } catch (err) {
-            console.log(err);
-            reject(err);
+            console.log("err", err);
+            reject({
+                status: 400,
+                message: err.message
+            });
         }
     });
 };
@@ -170,7 +230,10 @@ const hideComment = async (comment_id) => {
             const findCommentResult = await findOne(new Collections().comment, { _id: ObjectId(comment_id) });
             if (!findCommentResult) {
                 console.log("Comment not found");
-                reject("Comment not found");
+                reject({
+                    status: 404,
+                    message: "Comment not found"
+                });
             } else {
                 if (findCommentResult.isHide === false) {
                     const updateResult = await update_One(new Collections().comment, { _id: ObjectId(comment_id) }, { isHide: true });
@@ -179,16 +242,25 @@ const hideComment = async (comment_id) => {
                         resolve("Hide comment successfully");
                     } else {
                         console.log("Hide comment failed");
-                        reject("Hide comment failed");
+                        reject({
+                            status: 400,
+                            message: "Hide comment failed"
+                        });
                     }
                 } else {
                     console.log("Comment is already hidden");
-                    reject("Comment is already hidden");
+                    reject({
+                        status: 400,
+                        message: "Comment is already hidden"
+                    });
                 }
             }
         } catch (err) {
-            console.log(err);
-            reject(err);
+            console.log("err", err);
+            reject({
+                status: 400,
+                message: err.message
+            });
         }
     });
 };
@@ -199,7 +271,10 @@ const showComment = async (comment_id) => {
             const findCommentResult = await findOne(new Collections().comment, { _id: ObjectId(comment_id) });
             if (!findCommentResult) {
                 console.log("Comment not found");
-                reject("Comment not found");
+                reject({
+                    status: 404,
+                    message: "Comment not found"
+                });
             } else {
                 if (findCommentResult.isHide === true) {
                     const updateResult = await update_One(new Collections().comment, { _id: ObjectId(comment_id) }, { isHide: false });
@@ -208,16 +283,25 @@ const showComment = async (comment_id) => {
                         resolve("Show comment successfully");
                     } else {
                         console.log("Show comment failed");
-                        reject("Show comment failed");
+                        reject({
+                            status: 400,
+                            message: "Show comment failed"
+                        });
                     }
                 } else {
                     console.log("Comment is already Showed");
-                    reject("Comment is already Showed");
+                    reject({
+                        status: 400,
+                        message: "Comment is already Showed"
+                    });
                 }
             }
         } catch (err) {
-            console.log(err);
-            reject(err);
+            console.log("err", err);
+            reject({
+                status: 400,
+                message: err.message
+            });
         }
     });
 };

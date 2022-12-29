@@ -30,8 +30,8 @@ async function main(mailOptions) {
     });
     console.log("Message sent: %s", info.messageId);
     return info.messageId;
-  } catch (e) {
-    return e;
+  } catch (err) {
+    return err;
   }
 }
 
@@ -43,10 +43,18 @@ const sendMail = (mailOptions) => {
           resolve(data);
         })
         .catch((err) => {
-          reject(err.message);
+          console.log("err", err);
+          reject({
+            status: 400,
+            message: err.message
+          });
         });
     } catch (err) {
-      reject(err);
+      console.log("err", err);
+      reject({
+        status: 400,
+        message: err.message
+      });
     }
   });
 };
@@ -124,10 +132,18 @@ const sendMailConfirm = (confirmObj) => {
           resolve(data);
         })
         .catch((err) => {
-          reject(err.message);
+          console.log("err", err);
+          reject({
+            status: 400,
+            message: err.message
+          });
         });
     } catch (err) {
-      reject(err);
+      console.log("err", err);
+      reject({
+        status: 400,
+        message: err.message
+      });
     }
   });
 };
@@ -139,18 +155,31 @@ const codeConfirm = (confirmObj) => {
       const findResult = await findOne(new Collections().user, { username: confirmObj.username });
       if (!findResult) {
         console.log("username not exist!");
-        reject("username not exist!");
+        reject({
+          status: 404,
+          message: "username not exist!"
+        });
       }
       else if (!findResult.confirmCode || (findResult.confirmCode !== confirmObj.confirmCode)) {
         console.log("Wrong confirm code!");
-        reject("Wrong confirm code!");
+        reject({
+          status: 400,
+          message: "Wrong confirm code!"
+        });
       }
       else {
         console.log("Confirm code is correct");
-        resolve("Confirm code is correct");
+        resolve({
+          status: 200,
+          message: "Confirm code is correct"
+        });
       }
     } catch (err) {
-      reject(err);
+      console.log("err", err);
+      reject({
+        status: 400,
+        message: err.message
+      });
     }
   });
 };

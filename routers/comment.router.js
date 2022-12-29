@@ -15,10 +15,7 @@ commentRouter.post("/createcomment", async (req, res) => {
             res.send(data);
         })
         .catch((err) => {
-            if (typeof err == "object") {
-                res.status(400).send(err.message);
-            }
-            res.status(400).send(err);
+            res.status(err.status).send(err);
         });
 });
 
@@ -31,10 +28,7 @@ commentRouter.get("/commentlistbyhotel/:hotel_id", async (req, res) => {
             res.send(data);
         })
         .catch((err) => {
-            if (typeof err == "object") {
-                res.status(400).send(err.message);
-            }
-            res.status(400).send(err);
+            res.status(err.status).send(err);
         });
 });
 
@@ -46,10 +40,7 @@ commentRouter.delete("/deletecomment/:comment_id", async (req, res) => {
             res.send(data);
         })
         .catch((err) => {
-            if (typeof err == "object") {
-                res.status(400).send(err.message);
-            }
-            res.status(400).send(err);
+            res.status(err.status).send(err);
         });
 });
 

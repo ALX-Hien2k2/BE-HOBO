@@ -14,11 +14,17 @@ const getHotelDetail = async (hotel_id) => {
             }
             else {
                 console.log("Hotel not found");
-                reject("Hotel not found");
+                reject({
+                    status: 404,
+                    message: "Hotel not found"
+                });
             }
         } catch (err) {
-            console.log(err);
-            reject(err);
+            console.log("err", err);
+            reject({
+                status: 400,
+                message: err.message
+            });
         }
     });
 };
@@ -29,7 +35,10 @@ const changeHotelInfo = async (hotelChangeInfo) => {
             const findResult = await findOne(new Collections().hotel, { _id: ObjectId(hotelChangeInfo.hotelId) });
             if (!findResult) {
                 console.log("hotel not found");
-                reject("hotel not found");
+                reject({
+                    status: 404,
+                    message: "Hotel not found"
+                });
             } else {
                 console.log("hotel found");
                 const changeInfo = infoToChange(hotelChangeInfo);
@@ -47,25 +56,40 @@ const changeHotelInfo = async (hotelChangeInfo) => {
                             }
                             else {
                                 console.log("Find failed");
-                                reject("Cannot find hotel");
+                                reject({
+                                    status: 404,
+                                    message: "Cannot find hotel"
+                                });
                             }
                         } catch (err) {
-                            console.log(err);
-                            reject(err);
+                            console.log("err", err);
+                            reject({
+                                status: 400,
+                                message: err.message
+                            });
                         }
                     }
                     else {
                         console.log("Update failed");
-                        reject("Update failed");
+                        reject({
+                            status: 400,
+                            message: "Update failed"
+                        });
                     }
                 } catch (err) {
-                    console.log(err);
-                    reject(err);
+                    console.log("err", err);
+                    reject({
+                        status: 400,
+                        message: err.message
+                    });
                 }
             }
         } catch (err) {
-            console.log(err);
-            reject(err);
+            console.log("err", err);
+            reject({
+                status: 400,
+                message: err.message
+            });
         }
     });
 };
@@ -113,31 +137,52 @@ const createHotel = async (newHotelInfo) => {
                                 }
                                 else {
                                     console.log("Find failed");
-                                    reject("Cannot find hotel");
+                                    reject({
+                                        status: 404,
+                                        message: "Cannot find hotel"
+                                    });
                                 }
                             } else {
                                 console.log("Insert new hotel failed");
-                                reject("Create new hotel failed");
+                                reject({
+                                    status: 400,
+                                    message: "Create new hotel failed"
+                                });
                             }
                         } else {
                             console.log("Update user's hotelId failed");
-                            reject("Update user's hotelId failed");
+                            reject({
+                                status: 400,
+                                message: "Update user's hotelId failed"
+                            });
                         }
                     } else {
                         console.log("User already have a hotel");
-                        reject("User already have a hotel");
+                        reject({
+                            status: 400,
+                            message: "User already have a hotel"
+                        });
                     }
                 } else {
                     console.log("User is not a hotel owner");
-                    reject("User is not a hotel owner");
+                    reject({
+                        status: 400,
+                        message: "User is not a hotel owner"
+                    });
                 }
             } else {
                 console.log("User not found");
-                reject("User not found");
+                reject({
+                    status: 404,
+                    message: "User not found"
+                });
             }
         } catch (err) {
-            console.log(err);
-            reject(err);
+            console.log("err", err);
+            reject({
+                status: 400,
+                message: err.message
+            });
         }
     });
 };
@@ -162,20 +207,32 @@ const deleteHotel = async (hotel_id) => {
                     }
                     else {
                         console.log("Update user's hotelId failed");
-                        reject("Delete hotel successfully but update user's hotel_id failed");
+                        reject({
+                            status: 400,
+                            message: "Delete hotel successfully but update user's hotel_id failed"
+                        });
                     }
                 }
                 else {
                     console.log("Delete failed");
-                    reject("Delete failed");
+                    reject({
+                        status: 400,
+                        message: "Delete failed"
+                    });
                 }
             } else {
                 console.log("Hotel not found");
-                reject("Hotel not found");
+                reject({
+                    status: 404,
+                    message: "Hotel not found"
+                });
             }
         } catch (err) {
-            console.log(err);
-            reject(err);
+            console.log("err", err);
+            reject({
+                status: 400,
+                message: err.message
+            });
         }
     });
 };

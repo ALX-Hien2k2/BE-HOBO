@@ -20,7 +20,7 @@ adminRouter.get("/userlist", (req, res) => {
             res.send(userList);
         })
         .catch((err) => {
-            res.status(400).send(err);
+            res.status(err.status).send(err);
         });
 });
 
@@ -30,7 +30,7 @@ adminRouter.get("/hotellist", (req, res) => {
             res.send(data);
         })
         .catch((err) => {
-            res.status(400).send(err);
+            res.status(err.status).send(err);
         });
 });
 
@@ -42,7 +42,7 @@ adminRouter.get("/postlist", (req, res) => {
             res.send(postList);
         })
         .catch((err) => {
-            res.status(400).send(err);
+            res.status(err.status).send(err);
         });
 });
 
@@ -54,7 +54,7 @@ adminRouter.get("/postlist/:hotel_id", (req, res) => {
             res.send(postList);
         })
         .catch((err) => {
-            res.status(400).send(err);
+            res.status(err.status).send(err);
         });
 });
 
@@ -66,7 +66,7 @@ adminRouter.get("/commentlist", (req, res) => {
             res.send(commentList);
         })
         .catch((err) => {
-            res.status(400).send(err);
+            res.status(err.status).send(err);
         });
 });
 
@@ -77,10 +77,7 @@ adminRouter.patch("/approvepost/:post_id", (req, res) => {
             res.send(data);
         })
         .catch((err) => {
-            if (typeof err == "object") {
-                res.status(400).send(err.message);
-            }
-            res.status(400).send(err);
+            res.status(err.status).send(err);
         });
 });
 
@@ -91,10 +88,7 @@ adminRouter.patch("/disapprovepost/:post_id", (req, res) => {
             res.send(data);
         })
         .catch((err) => {
-            if (typeof err == "object") {
-                res.status(400).send(err.message);
-            }
-            res.status(400).send(err);
+            res.status(err.status).send(err);
         });
 });
 
@@ -105,10 +99,7 @@ adminRouter.patch("/showcomment/:comment_id", (req, res) => {
             res.send(data);
         })
         .catch((err) => {
-            if (typeof err == "object") {
-                res.status(400).send(err.message);
-            }
-            res.status(400).send(err);
+            res.status(err.status).send(err);
         });
 });
 
@@ -119,10 +110,7 @@ adminRouter.patch("/hidecomment/:comment_id", (req, res) => {
             res.send(data);
         })
         .catch((err) => {
-            if (typeof err == "object") {
-                res.status(400).send(err.message);
-            }
-            res.status(400).send(err);
+            res.status(err.status).send(err);
         });
 });
 

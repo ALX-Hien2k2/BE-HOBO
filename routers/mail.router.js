@@ -15,54 +15,56 @@ mailRouter.post("/sendNewMail", (req, res) => {
     message: req.body.message,
   });
   if (!mail.validation()) {
-    return res.status(400).send("Invalid mail");
+    return res.status(400).send({
+      status: 400,
+      message: "Invalid mail"
+    });
   }
   try {
     sendMail(mail)
       .then((data) => {
-        res.send("OK");
+        res.status(200).send({
+          status: 200,
+          message: "Sent mail successfully"
+        });
       })
-      .catch((err) => { });
+      .catch((err) => {
+        res.status(err.status).send(err);
+      });
   } catch (err) {
-    res.status(400).send(err);
+    console.log("err", err);
+    res.status(400).send({
+      status: 400,
+      message: err.message
+    });
   }
 });
 
 mailRouter.post("/emailConfirm", (req, res) => {
-  try {
-    const confirmObj = req.body;
-    console.log("confirm object: ", confirmObj);
-    sendMailConfirm(confirmObj)
-      .then((data) => {
-        res.send("Confirm code sent");
-      })
-      .catch((err) => {
-        res.status(400).send(err.message);
+  const confirmObj = req.body;
+  console.log("confirm object: ", confirmObj);
+  sendMailConfirm(confirmObj)
+    .then((data) => {
+      res.status(200).send({
+        status: 200,
+        message: "Confirm code sent"
       });
-  } catch (err) {
-    res.status(400).send(err);
-  }
+    })
+    .catch((err) => {
+      res.status(err.status).send(err);
+    });
 });
 
 mailRouter.post("/confirmCode", (req, res) => {
-  try {
-    const confirmObj = req.body;
-    console.log("confirm object: ", confirmObj);
-    codeConfirm(confirmObj)
-      .then((data) => {
-        res.send(data);
-      })
-      .catch((err) => {
-        if (typeof err == "string") {
-          res.status(400).send(err);
-        }
-        else {
-          res.status(400).send(err.message);
-        }
-      });
-  } catch (err) {
-    res.status(400).send(err);
-  }
+  const confirmObj = req.body;
+  console.log("confirm object: ", confirmObj);
+  codeConfirm(confirmObj)
+    .then((data) => {
+      res.status(data.status).send(data);
+    })
+    .catch((err) => {
+      res.status(err.status).send(err);
+    });
 });
 
 module.exports = mailRouter;

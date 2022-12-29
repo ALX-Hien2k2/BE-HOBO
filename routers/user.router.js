@@ -27,7 +27,7 @@ userRouter.get("/info/:uid", (req, res) => {
       res.send(userInfo);
     })
     .catch((err) => {
-      res.status(400).send(err);
+      res.status(err.status).send(err);
     });
 });
 
@@ -40,10 +40,7 @@ userRouter.post("/signin", (req, res) => {
       res.send(data);
     })
     .catch((err) => {
-      if (typeof err == "object") {
-        res.status(400).send(err.message);
-      }
-      res.status(400).send(err);
+      res.status(err.status).send(err);
     });
 });
 
@@ -55,12 +52,7 @@ userRouter.post("/signup", (req, res) => {
       res.send(data);
     })
     .catch((err) => {
-      if (typeof err == "object") {
-        res.status(400).send(err.message);
-      }
-      else {
-        res.status(400).send(err);
-      }
+      res.status(err.status).send(err);
     });
 });
 
@@ -72,12 +64,7 @@ userRouter.post("/changeinfo", (req, res) => {
       res.send(data);
     })
     .catch((err) => {
-      if (typeof err == "string") {
-        res.status(400).send(err);
-      }
-      else {
-        res.status(400).send(err.message);
-      }
+      res.status(err.status).send(err);
     });
 });
 
@@ -86,15 +73,10 @@ userRouter.post("/changepassword", (req, res) => {
   const userChangePassword = req.body;
   changePassword(userChangePassword)
     .then((data) => {
-      res.send(data);
+      res.status(data.status).send(data);
     })
     .catch((err) => {
-      if (typeof err == "string") {
-        res.status(400).send(err);
-      }
-      else {
-        res.status(400).send(err.message);
-      }
+      res.status(err.status).send(err);
     });
 });
 
@@ -106,12 +88,7 @@ userRouter.post("/resetpassword", (req, res) => {
       res.send(status);
     })
     .catch((err) => {
-      if (typeof err == "string") {
-        res.status(400).send(err);
-      }
-      else {
-        res.status(400).send(err.message);
-      }
+      res.status(err.status).send(err);
     });
 });
 

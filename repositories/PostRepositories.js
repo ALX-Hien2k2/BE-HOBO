@@ -11,17 +11,22 @@ const getPostDetail = async (post_id) => {
     try {
       const postInfo = await findOne(new Collections().post, { _id: ObjectId(post_id), isApproved: true });
       if (postInfo) {
-
         console.log("postInfo", postInfo);
         resolve(postInfo);
       }
       else {
         console.log("Post not found");
-        reject("Post not found");
+        reject({
+          status: 404,
+          message: "Post not found"
+        });
       }
     } catch (err) {
-      console.log(err);
-      reject(err);
+      console.log("err", err);
+      reject({
+        status: 400,
+        message: err.message
+      });
     }
   });
   return promise;
@@ -52,10 +57,17 @@ const getPostList = async (filter) => {
       }
       else {
         console.log("roomList not found");
-        reject("roomList not found");
+        reject({
+          status: 404,
+          message: "roomList not found"
+        });
       }
     } catch (err) {
-      reject(err);
+      console.log("err", err);
+      reject({
+        status: 400,
+        message: err.message
+      });
     }
   });
   return promise;
@@ -83,10 +95,17 @@ const getPostListByHotelId = async (hotel_id) => {
       }
       else {
         console.log("roomList not found");
-        reject("roomList not found");
+        reject({
+          status: 404,
+          message: "roomList not found"
+        });
       }
     } catch (err) {
-      reject(err);
+      console.log("err", err);
+      reject({
+        status: 400,
+        message: err.message
+      });
     }
   });
 };
@@ -113,10 +132,17 @@ const getPostListByHotelId_Except = async (hotel_id, post_id) => {
       }
       else {
         console.log("roomList not found");
-        reject("roomList not found");
+        reject({
+          status: 404,
+          message: "roomList not found"
+        });
       }
     } catch (err) {
-      reject(err);
+      console.log("err", err);
+      reject({
+        status: 400,
+        message: err.message
+      });
     }
   });
 };
@@ -142,8 +168,11 @@ const createPost = async (post) => {
       // Check if hotel exists
       const resultHotel = await findOne(new Collections().hotel, { _id: ObjectId(post.hotelId) });
       if (!resultHotel) {
-        console.log("hotel not found");
-        reject("hotel not found");
+        console.log("Hotel not found");
+        reject({
+          status: 404,
+          message: "Hotel not found"
+        });
       } else {
         console.log("hotel found");
 
@@ -166,25 +195,40 @@ const createPost = async (post) => {
               }
               else {
                 console.log("Find failed");
-                reject("Cannot find post");
+                reject({
+                  status: 404,
+                  message: "Cannot find post"
+                });
               }
             } catch (err) {
-              console.log(err);
-              reject(err);
+              console.log("err", err);
+              reject({
+                status: 400,
+                message: err.message
+              });
             }
           }
           else {
             console.log("Insert failed");
-            reject("create post failed");
+            reject({
+              status: 400,
+              message: "Create post failed"
+            });
           }
         } catch (err) {
-          console.log(err);
-          reject(err);
+          console.log("err", err);
+          reject({
+            status: 400,
+            message: err.message
+          });
         }
       }
     } catch (err) {
-      console.log(err);
-      reject(err);
+      console.log("err", err);
+      reject({
+        status: 400,
+        message: err.message
+      });
     }
   });
   return promise;
@@ -196,7 +240,10 @@ const changePostInfo = async (postChangeInfo) => {
       const findResult = await findOne(new Collections().post, { _id: ObjectId(postChangeInfo._id) });
       if (!findResult) {
         console.log("Post not found");
-        reject("Post not found");
+        reject({
+          status: 404,
+          message: "Post not found"
+        });
       } else {
         console.log("Post found");
         const changeInfo = infoToChange(postChangeInfo);
@@ -214,25 +261,40 @@ const changePostInfo = async (postChangeInfo) => {
               }
               else {
                 console.log("Find failed");
-                reject("Cannot find post");
+                reject({
+                  status: 404,
+                  message: "Cannot find post"
+                });
               }
             } catch (err) {
-              console.log(err);
-              reject(err);
+              console.log("err", err);
+              reject({
+                status: 400,
+                message: err.message
+              });
             }
           }
           else {
             console.log("Update failed");
-            reject("Update failed");
+            reject({
+              status: 400,
+              message: "Update failed"
+            });
           }
         } catch (err) {
-          console.log(err);
-          reject(err);
+          console.log("err", err);
+          reject({
+            status: 400,
+            message: err.message
+          });
         }
       }
     } catch (err) {
-      console.log(err);
-      reject(err);
+      console.log("err", err);
+      reject({
+        status: 400,
+        message: err.message
+      });
     }
   });
 };
@@ -247,16 +309,20 @@ const deletePost = async (post_id) => {
       }
       else {
         console.log("Delete failed");
-        reject("Delete failed");
+        reject({
+          status: 400,
+          message: "Delete failed"
+        });
       }
     } catch (err) {
-      console.log(err);
-      reject(err);
+      console.log("err", err);
+      reject({
+        status: 400,
+        message: err.message
+      });
     }
   });
 };
-
-
 
 module.exports = {
   createPost,
