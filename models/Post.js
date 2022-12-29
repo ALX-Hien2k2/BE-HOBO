@@ -16,7 +16,7 @@ class Post extends Model {
     this.slider = null; // array
     this.description = null;
 
-    this.isApproved = true; // true: approved, false: disapprove
+    this.isApproved = null; // true: approved, false: rejected, null: unapproved (default)
   }
 
   setInfo(obj) {

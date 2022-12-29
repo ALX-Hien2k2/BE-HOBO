@@ -5,10 +5,11 @@ const { findOne, findAll, insertOne, update_One, delete_One } = require("../serv
 const Collections = require("../services/Collections");
 const ObjectId = require('mongodb').ObjectId;
 
+// Get post detail that is approved (isApproved: true)
 const getPostDetail = async (post_id) => {
   const promise = new Promise(async (resolve, reject) => {
     try {
-      const postInfo = await findOne(new Collections().post, { _id: ObjectId(post_id) });
+      const postInfo = await findOne(new Collections().post, { _id: ObjectId(post_id), isApproved: true });
       if (postInfo) {
 
         console.log("postInfo", postInfo);
