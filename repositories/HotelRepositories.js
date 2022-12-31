@@ -32,7 +32,7 @@ const getHotelDetail = async (hotel_id) => {
 const changeHotelInfo = async (hotelChangeInfo) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const findResult = await findOne(new Collections().hotel, { _id: ObjectId(hotelChangeInfo.hotelId) });
+            const findResult = await findOne(new Collections().hotel, { _id: ObjectId(hotelChangeInfo._id) });
             if (!findResult) {
                 console.log("hotel not found");
                 reject({
@@ -45,11 +45,11 @@ const changeHotelInfo = async (hotelChangeInfo) => {
                 changeInfo.updatedDate = new Date().toLocaleString();
                 console.log("changeInfo", changeInfo);
                 try {
-                    const updateResult = await update_One(new Collections().hotel, { _id: ObjectId(hotelChangeInfo.hotelId) }, changeInfo);
+                    const updateResult = await update_One(new Collections().hotel, { _id: ObjectId(hotelChangeInfo._id) }, changeInfo);
                     if (updateResult["acknowledged"] === true) {
                         console.log("Update successfully");
                         try {
-                            const findResult = await findOne(new Collections().hotel, { _id: ObjectId(hotelChangeInfo.hotelId) });
+                            const findResult = await findOne(new Collections().hotel, { _id: ObjectId(hotelChangeInfo._id) });
                             if (findResult) {
                                 console.log("Find successfully");
                                 resolve(findResult);
