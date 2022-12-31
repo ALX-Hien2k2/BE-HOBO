@@ -34,7 +34,7 @@ adminRouter.get("/hotellist", (req, res) => {
         });
 });
 
-adminRouter.get("/postlist", (req, res) => {
+adminRouter.post("/postlist", (req, res) => {
     const filter = req.body;
     console.log(filter);
     getPostList_Admin(filter)
@@ -46,7 +46,7 @@ adminRouter.get("/postlist", (req, res) => {
         });
 });
 
-adminRouter.get("/postlist/:hotel_id", (req, res) => {
+adminRouter.post("/postlist/:hotel_id", (req, res) => {
     const hotel_id = req.params.hotel_id;
     console.log(hotel_id);
     getPostListByHotelId_Admin(hotel_id)
