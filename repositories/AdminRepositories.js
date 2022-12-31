@@ -151,7 +151,7 @@ const approvePost = async (post_id) => {
                     message: "Post not found"
                 });
             } else {
-                if (findPostResult.isApproved === false) {
+                if (findPostResult.isApproved !== true) {
                     const updateResult = await update_One(new Collections().post, { _id: ObjectId(post_id) }, { isApproved: true });
                     if (updateResult["matchedCount"] === 1) {
                         console.log("Approve post successfully");
@@ -193,7 +193,7 @@ const disapprovePost = async (post_id) => {
                     message: "Post not found"
                 });
             } else {
-                if (findPostResult.isApproved === true) {
+                if (findPostResult.isApproved !== false) {
                     const updateResult = await update_One(new Collections().post, { _id: ObjectId(post_id) }, { isApproved: false });
                     if (updateResult["matchedCount"] === 1) {
                         console.log("Disapprove post successfully");
