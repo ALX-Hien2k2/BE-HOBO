@@ -46,7 +46,7 @@ postRouter.get("/postlist/:hotel_id", (req, res) => {
     });
 });
 
-postRouter.get("/postlistexcept", (req, res) => {
+postRouter.post("/postlistexcept", (req, res) => {
   const { hotel_id, post_id } = req.body;
   console.log("hotel_id", hotel_id);
   console.log("post_id", post_id);
